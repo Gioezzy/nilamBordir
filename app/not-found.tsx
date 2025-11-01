@@ -1,6 +1,6 @@
 import { ArrowLeftIcon } from 'lucide-react';
 import Image from 'next/image';
-          import Link from 'next/link';
+import Link from 'next/link';
 import React from 'react';
 
 export default function NotFound() {
@@ -16,7 +16,7 @@ export default function NotFound() {
               width={288}
               height={190}
             />
-              
+
             <h2 className="mb-3 text-xl font-medium text-dark sm:text-2xl">
               Sorry, the page can&apos;t be found.
             </h2>
