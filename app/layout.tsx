@@ -1,24 +1,23 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Geist, Geist_Mono } from 'next/font/google';
+import './globals.css';
 
-import { ThemeProvider } from "next-themes";
-import { Toaster } from "sonner";
-import ThemeToggle from "@/components/theme-toggle";
+import { ThemeProvider } from 'next-themes';
+import { Toaster } from 'sonner';
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
-  title: "Nilam Bordir",
-  description: "Toko bordir online — pesan bordir custom dengan mudah!",
+  title: 'Nilam Bordir',
+  description: 'Toko bordir online — pesan bordir custom dengan mudah!',
 };
 
 export default function RootLayout({
@@ -38,7 +37,6 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
-          <ThemeToggle/>
           <Toaster richColors position="top-right" />
         </ThemeProvider>
       </body>
