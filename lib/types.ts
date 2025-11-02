@@ -1,5 +1,8 @@
 import { Database } from './supabase/database.types';
 
+export type Category = Database['public']['Tables']['categories']['Row'];
+export type CategoryInsert =
+  Database['public']['Tables']['categories']['Insert'];
 export type Profile = Database['public']['Tables']['profiles']['Row'];
 export type Product = Database['public']['Tables']['products']['Row'];
 export type Order = Database['public']['Tables']['orders']['Row'];
@@ -19,12 +22,13 @@ export type OrderInsert = Database['public']['Tables']['orders']['Insert'];
 export type ProfileUpdate = Database['public']['Tables']['profiles']['Update'];
 export type ProductUpdate = Database['public']['Tables']['products']['Update'];
 
-export interface OrderWithItems extends Order {
+export interface OrderWithDetails extends Order {
   order_items: (OrderItem & {
     product: Product | null;
     design: Design | null;
   })[];
   payment: Payment | null;
+  profile: Profile;
 }
 
 export interface CartItem {
@@ -32,4 +36,13 @@ export interface CartItem {
   quantity: number;
   design?: Design;
   customDescription?: string;
+}
+
+export interface ProductWithCategory extends Product {
+  category: Category;
+}
+
+export interface DesignWithUser extends Design {
+  profile: Profile;
+  category: Category | null;
 }
