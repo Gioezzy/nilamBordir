@@ -4,6 +4,9 @@ import { createClient } from '@/lib/supabase/client';
 import { useEffect, useState } from 'react';
 import type { User } from '@supabase/supabase-js';
 
+/**
+ * Custom hook to manage user authentication state with Supabase.
+ */
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
