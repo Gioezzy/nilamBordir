@@ -146,7 +146,7 @@ export default function Footer() {
               </li>
               <li className="flex items-start space-x-3">
                 <MapPin className="w-5 h-5 mt-0.5 flex-shrink-0" />
-                <span>Padang, Indonesia</span>
+                <span>Padang Panjang, Indonesia</span>
               </li>
             </ul>
           </div>
