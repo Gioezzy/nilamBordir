@@ -15,7 +15,7 @@ export interface CartItem {
   price: number;
   quantity: number;
   image?: string;
-  customNodes?: string;
+  customNotes?: string;
 }
 
 interface CartContentType {
