@@ -38,7 +38,7 @@ export default function ForgotPasswordForm() {
         <h3 className="text-xl font-semibold">Email Terkirim!</h3>
         <p className="text-gray-600">
           Kami telah mengirim link reset password ke email anda. Silahkan cek
-          inbox atau folder span.
+          inbox atau folder spam.
         </p>
         <Link href="/login">
           <Button variant="outline" className="w-full">
