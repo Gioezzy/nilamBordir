@@ -154,8 +154,11 @@ export async function logoutAction() {
   const { error } = await supabase.auth.signOut();
 
   if (error) {
+    console.error('Gagal logout:', error.message)
     return { error: error.message };
   }
 
-  redirect('/');
+  // await removeClientSession()
+
+  return{ success: true};
 }
