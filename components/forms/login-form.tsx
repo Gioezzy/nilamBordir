@@ -7,6 +7,7 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import PasswordField from './password-field';
 
 export default function LoginForm() {
   const [isPending, startTransition] = useTransition();
@@ -41,13 +42,21 @@ export default function LoginForm() {
             id="email"
             name="email"
             type="email"
-            placeholder="yourname@example.com"
+            placeholder="youremail@example.com"
             required
             disabled={isPending}
           />
         </div>
 
-        <div className="space-y-2">
+        <PasswordField
+          id="password"
+          name="password"
+          label="Password"
+          required
+          disabled={isPending}
+        />
+
+        {/* <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label htmlFor="password">Password</Label>
             <Link
@@ -65,9 +74,9 @@ export default function LoginForm() {
             required
             disabled={isPending}
           />
-        </div>
+        </div> */}
         {error && (
-          <div className="text-sm text-red-500 bg-red-500 border border-red-200 rounded-lg p-4">
+          <div className="text-sm text-black-500 bg-red-500 border border-red-200 rounded-lg p-4">
             {error}
           </div>
         )}
