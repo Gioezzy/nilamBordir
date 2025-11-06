@@ -116,7 +116,7 @@ export default function Navbar() {
                   ))}
                   <div className="border-t my-1"></div>
                   <Link
-                    href="/"
+                    href="/shop"
                     className="block px-4 py-2.5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors text-sm font-medium"
                   >
                     Lihat Semua Produk
@@ -241,7 +241,7 @@ export default function Navbar() {
                 </Link>
               ))}
               <Link
-                href="/"
+                href="/shop"
                 className="block px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg transition-colors font-medium"
               >
                 Semua Produk
