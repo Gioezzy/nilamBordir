@@ -6,9 +6,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
-export default function LoginPage() {
+export default function LoginPage({
+  searchParams,
+}: {
+  searchParams: { registered?: string; reset?: string; error?: string };
+}) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md">
@@ -25,6 +30,32 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {searchParams.registered && (
+            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-start gap-2">
+              <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-green-800">
+                Registrasi berhasil! Silahkan login dengan akun Anda.
+              </p>
+            </div>
+          )}
+
+          {searchParams.reset && (
+            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-start gap-2">
+              <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-green-800">
+                Password berhasil direset! Silahkan login dengan password baru.
+              </p>
+            </div>
+          )}
+
+          {searchParams.error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-800">
+                Terjadi kesalahan. Silahkan coba lagi.
+              </p>
+            </div>
+          )}
+
           <LoginForm />
         </CardContent>
       </Card>
