@@ -16,10 +16,13 @@ export async function loginAction(formData: FormData) {
   });
 
   if (error) {
-    return { error: error.message };
+    if ( error.message.includes('Email not confirmed')){
+      return {error: 'Email belum diverifikasi, Silahkan cek inbox Anda'}
+    }
+    return { error: error.message}
   }
 
-  redirect('/dashboard');
+  redirect('/');
 }
 
 export async function registerAction(formData: FormData) {
@@ -42,25 +45,54 @@ export async function registerAction(formData: FormData) {
   });
 
   if (error) {
+    console.error('Auth signup error:', error)
     return { error: error.message };
   }
 
-  if (data.user) {
-    const { error: profileError } = await supabase.from('profiles').insert({
-      id: data.user.id,
-      full_name: fullName,
-      role: 'customer',
-    });
-
-    if (profileError) {
-      return { error: 'Gagal membuat profil. Silahkan coba lagi nanti.' };
-    }
+  if(!data.user){
+    return {error: 'Registrasi gagal. Silahkan coba lagi.'}
   }
 
-  return {
-    success: true,
-    message: 'Registrasi berhasil! Silahkan cek email anda untuk verifikasi.',
-  };
+  // const { createClient: createServiceClient } = await import ('@supabase/supabase-js')
+  // const supabaseAdmin = createServiceClient(
+  //   process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  //   process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  //   {
+  //     auth: {
+  //       autoRefreshToken: false,
+  //       persistSession: false
+  //     }
+  //   }
+  // )
+
+  // const { error: profileError } = await supabaseAdmin
+  //   .from('profiles')
+  //   .insert({
+  //     id: data.user.id,
+  //     full_name: fullName,
+  //     role: 'customer'
+  //   })
+
+  // if (profileError){
+  //   console.error('Profile creation error:', profileError)
+
+  //   await supabaseAdmin.auth.admin.deleteUser(data.user.id)
+
+  //   return { error: 'Gagal membuat profil. Silahkan coba lagi.'}
+  // }
+
+  if (data.session){
+    return {
+      success: true,
+      message: 'Registrasi berhasil!, Mengalihkan...',
+      autoLogin: true
+    }
+  } else {
+    return{
+      success: true,
+      message: 'Registrasi berhasil! Silahkan cek email anda untuk verifikasi'
+    }
+  }
 }
 
 export async function signInWithGoogleAction() {
@@ -89,7 +121,7 @@ export async function forgotPasswordAction(formData: FormData) {
   const origin = (await headers()).get('origin');
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin}/auth/reset-password`,
+    redirectTo: `${origin}/auth/callback?next=/reset-password`,
   });
 
   if (error) {
