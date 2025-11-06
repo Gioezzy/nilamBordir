@@ -11,17 +11,24 @@ interface CategoryPageProps {
   params: {
     slug: string;
   };
-  searchParams: {
+  searchParams: Promise<{
     sort?: string;
     min?: string;
     max?: string;
-  };
+  }>;
 }
 
-export async function generatedMetadata({ params }: CategoryPageProps) {
-  const category = await getCategoryBySlug(params.slug);
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const resolvedParams = await params
+  const category = await getCategoryBySlug(resolvedParams.slug);
 
-  if (!category) return { title: 'Category Not Found' };
+  if (!category) {
+    return { title: 'Category Not Found' };
+  }
 
   return {
     title: `${category.name} - Nilam Bordir`,
@@ -33,17 +40,19 @@ export default async function CategoryPage({
   params,
   searchParams,
 }: CategoryPageProps) {
-  const category = await getCategoryBySlug(params.slug);
+  const resolvedParams = await params
+  const resolvedSearchParams = await searchParams
+  const category = await getCategoryBySlug(resolvedParams.slug);
 
   if (!category) {
-    NotFound();
+    return <NotFound />;
   }
 
   const { products, total } = await getProducts({
     categoryId: category.id,
-    sortBy: searchParams.sort as any,
-    minPrice: searchParams.min ? parseInt(searchParams.min) : undefined,
-    maxPrice: searchParams.max ? parseInt(searchParams.max) : undefined,
+    sortBy: resolvedSearchParams.sort as any,
+    minPrice: resolvedSearchParams.min ? parseInt(resolvedSearchParams.min) : undefined,
+    maxPrice: resolvedSearchParams.max ? parseInt(resolvedSearchParams.max) : undefined,
   });
 
   return (
