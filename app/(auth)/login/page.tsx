@@ -9,11 +9,16 @@ import {
 import { CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
-export default function LoginPage({
+export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: { registered?: string; reset?: string; error?: string };
+  searchParams: Promise<{
+    registered?: string;
+    reset?: string;
+    error?: string;
+  }>;
 }) {
+  const params = await searchParams;
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md">
@@ -30,7 +35,7 @@ export default function LoginPage({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {searchParams.registered && (
+          {params.registered && (
             <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-start gap-2">
               <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
               <p className="text-sm text-green-800">
@@ -39,7 +44,7 @@ export default function LoginPage({
             </div>
           )}
 
-          {searchParams.reset && (
+          {params.reset && (
             <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-start gap-2">
               <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
               <p className="text-sm text-green-800">
@@ -48,7 +53,7 @@ export default function LoginPage({
             </div>
           )}
 
-          {searchParams.error && (
+          {params.error && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
               <p className="text-sm text-red-800">
                 Terjadi kesalahan. Silahkan coba lagi.
