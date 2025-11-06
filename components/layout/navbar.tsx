@@ -16,6 +16,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { usePathname } from 'next/navigation';
 import { logoutAction } from '@/lib/actions/auth';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 const CATEGORIES = [
   { name: 'Salempang Bordir', slug: 'salempang-bordir' },
@@ -34,10 +35,19 @@ export default function Navbar() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const router = useRouter();
 
   const handleLogout = async () => {
-    await logoutAction();
+    const res = await logoutAction();
+
+    if (res?.error) {
+      toast.error(res.error);
+      return;
+    }
     toast.success('Anda berhasil logout');
+    router.push('/login')
+    // await logoutAction();
+    router.refresh();
     setIsUserMenuOpen(false);
   };
 
