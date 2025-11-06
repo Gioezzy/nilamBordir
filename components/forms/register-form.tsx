@@ -2,27 +2,32 @@
 
 import { useState, useTransition } from 'react';
 import { registerAction, signInWithGoogleAction } from '@/lib/actions/auth';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { Mail } from 'lucide-react';
+import PasswordField from './password-field';
 
 export default function RegisterForm() {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-
+  const [success, setSuccess] = useState(false);
+  const [email, setEmail] = useState('');
   const router = useRouter();
 
   async function handleSubmit(formData: FormData) {
     setError(null);
+    const emailValue = formData.get('email') as string;
+    setEmail(emailValue);
 
     const password = formData.get('password') as string;
     const confirmPassword = formData.get('confirmPassword') as string;
 
     if (password !== confirmPassword) {
-      setError('Password tidak cocok.');
+      setError('Password tidak cocok');
       toast.error('Password tidak cocok');
       return;
     }
@@ -34,8 +39,15 @@ export default function RegisterForm() {
         setError(result.error);
         toast.error(result.error);
       } else if (result?.success) {
-        toast.success(result.message);
-        router.push('/login?registered?true');
+        if (result.autoLogin) {
+          toast.success('Registrasi berhasil! Mengalihkan...');
+          setTimeout(() => {
+            router.push('/dashboard');
+          }, 1000);
+        } else {
+          setSuccess(true);
+          toast.success(result.message);
+        }
       }
     });
   }
@@ -47,6 +59,42 @@ export default function RegisterForm() {
         toast.error(result.error);
       }
     });
+  }
+
+  if (success) {
+    return (
+      <div className="w-full text-center space-y-6">
+        <div className="flex justify-center">
+          <div className="rounded-full bg-green-100 p-4">
+            <Mail className="w-12 h-12 text-green-600" />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <h3 className="text-2xl font-bold">Cek Email Anda!</h3>
+          <p className="text-gray-600">
+            Kami telah mengirimkan link verifikasi ke:
+          </p>
+          <p className="font-semibold text-gray-900">{email}</p>
+          <p className="text-sm text-gray-600">
+            Silakan klik link di email untuk mengaktifkan akun Anda.
+          </p>
+        </div>
+        <div className="space-y-3">
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => window.location.reload()}
+          >
+            Daftar dengan Email Lain
+          </Button>
+          <Link href="/login">
+            <Button variant="link" className="w-full">
+              Kembali ke Login
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -70,42 +118,33 @@ export default function RegisterForm() {
           <Input
             id="email"
             name="email"
-            type="text"
-            placeholder="yourname@example.com"
+            type="email"
+            placeholder="nama@email.com"
             required
             disabled={isPending}
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            name="password"
-            type="text"
-            placeholder="******"
-            required
-            disabled={isPending}
-            minLength={6}
-          />
-          <p className="text-xs text-gray-500">Minimal 6 karakter</p>
-        </div>
+        <PasswordField
+          id="password"
+          name="password"
+          label="Password"
+          required
+          disabled={isPending}
+          showForgotPassword={false}
+        />
 
-        <div className="space-y-2">
-          <Label htmlFor="password">Konfirmasi Password</Label>
-          <Input
-            id="password"
-            name="password"
-            type="text"
-            placeholder="******"
-            required
-            disabled={isPending}
-            minLength={6}
-          />
-        </div>
+        <PasswordField
+          id="confirmPassword"
+          name="confirmPassword"
+          label="Konfirmasi Password"
+          required
+          disabled={isPending}
+          showForgotPassword={false}
+        />
 
         {error && (
-          <div className="text-sm text-reg-600 bg-red-50 border border-red-200 rounded-lg p-3">
+          <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3">
             {error}
           </div>
         )}
@@ -155,7 +194,7 @@ export default function RegisterForm() {
       </Button>
 
       <p className="text-center text-sm text-gray-600">
-        Sudah punya Akun?{' '}
+        Sudah punya akun?{' '}
         <Link
           href="/login"
           className="font-semibold text-gray-900 hover:underline"
