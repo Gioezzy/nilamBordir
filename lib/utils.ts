@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -72,6 +73,20 @@ export function calculatePickupDate(leadTimeDays: number): Date {
   const date = new Date();
   date.setDate(date.getDate() + leadTimeDays);
   return date;
+}
+
+export function truncate(str: string, length: number):string {
+  if(str.length <= length) return str
+  return str.slice(0, length) + '...'
+}
+
+export function getProductImage(sampleImages: any): string {
+  if (!sampleImages || !Array.isArray(sampleImages) || sampleImages.length === 0){
+    return '/images/placeholder-product.png'
+  }
+
+  const primaryImage = sampleImages.find((img:any) => img.is_primary)
+  return primaryImage?.url || sampleImages[0]?.url || '/images/placeholder-product.png'
 }
 
 /**
