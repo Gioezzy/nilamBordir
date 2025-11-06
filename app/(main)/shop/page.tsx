@@ -24,17 +24,18 @@ export const metadata = {
 };
 
 export default async function ShopPage({ searchParams }: ShopPageProps) {
+  const params = await searchParams;
   const categories = await getCategories();
 
   const { products, total } = await getProducts({
-    categoryId: searchParams.category,
-    sortBy: searchParams.sort as any,
-    minPrice: searchParams.min ? parseInt(searchParams.min) : undefined,
-    maxPrice: searchParams.max ? parseInt(searchParams.max) : undefined,
-    search: searchParams.search,
+    categoryId: params.category,
+    sortBy: params.sort as any,
+    minPrice: params.min ? parseInt(params.min) : undefined,
+    maxPrice: params.max ? parseInt(params.max) : undefined,
+    search: params.search,
   });
 
-  const activeCategory = categories.find(c => c.id === searchParams.category);
+  const activeCategory = categories.find(c => c.id === params.category);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -54,17 +55,17 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
         <div className="flex flex-wrap gap-3 mb-6">
           <CategoryFilterTabs
             categories={categories}
-            activeCategory={searchParams.category}
+            activeCategory={params.category}
           />
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex-1">
-            <SearchBar defaultValue={searchParams.search} />
+            <SearchBar defaultValue={params.search} />
           </div>
           <div className="sm:w-64">
             <Suspense fallback={<div>Loading...</div>}>
-              <SortDropdown defaultValue={searchParams.sort} />
+              <SortDropdown defaultValue={params.sort} />
             </Suspense>
           </div>
         </div>
@@ -85,7 +86,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
             <p className="text-gray-600 text-lg mb-4">
               Tidak ada produk ditemukan
             </p>
-            {(searchParams.search || searchParams.category) && (
+            {(params.search || params.category) && (
               <a
                 href="/shop"
                 className="text-gray-900 font-semibold hover:underline"
