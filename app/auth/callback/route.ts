@@ -17,10 +17,12 @@ export async function GET(request: Request) {
       .eq('id', data.user.id)
       .single()
 
-      if (!profile){
+      if (!profile) {
         await supabase.from('profiles').insert({
           id: data.user.id,
-          full_name: data.user.user_metadata.full_name || data.user.email?.split('@')[0],
+          full_name: data.user.user_metadata.full_name || 
+                     data.user.user_metadata.name ||
+                     data.user.email?.split('@')[0],
           role: 'customer',
         })
       }
