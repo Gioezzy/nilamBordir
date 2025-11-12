@@ -64,6 +64,58 @@ export const UPLOAD_CONSTRAINTS = {
   ALLOWED_EXTENSIONS: ['.jpg', '.jpeg', '.png', '.webp', '.pdf'],
 };
 
+export const BORDIR_CONFIG = {
+  TITIK_OPTIONS: [
+    {value: '2', label: '2 Titik', price: 60000},
+    {value: '3', label: '3 Titik Vertikal', price: 70000},
+    {value: '4_datar', label: '4 Titik Datar', price: 70000},
+    {value: '4', label: '4 Titik', price: 75000},
+    {value: '4_vertikal', label: '4 Titik Vertila', price: 75000},
+    {value: '4_garis', label: '4 Titik Garis', price: 75000},
+    {value: '5_garus', label: '5 Titik Garis', price: 80000}
+  ],
+
+  LAYOUT_TYPES: [
+    { value: 'vertikal', label: 'Vertikal', icon: '|' },
+    { value: 'horizontal', label: 'Horizontal (Datar)', icon: '—' },
+    { value: 'garis', label: 'Garis', icon: '/' },
+  ],
+
+  FONT_STYLES: [
+    { value: 'arial', label: 'Arial', preview: 'Arial' },
+    { value: 'casual_serif', label: 'Casual Serif', preview: 'Casual Serif' },
+    { value: 'chancery', label: 'Chancery', preview: 'Chancery' },
+    { value: 'seagul', label: 'Seagul', preview: 'Seagul' },
+  ],
+
+  THREAD_COLORS: [
+    { value: 'hitam', label: 'Hitam', hex: '#000000' },
+    { value: 'putih', label: 'Putih', hex: '#FFFFFF' },
+    { value: 'merah', label: 'Merah', hex: '#DC2626' },
+    { value: 'biru', label: 'Biru', hex: '#2563EB' },
+    { value: 'hijau', label: 'Hijau', hex: '#16A34A' },
+    { value: 'kuning', label: 'Kuning', hex: '#EAB308' },
+    { value: 'orange', label: 'Orange', hex: '#EA580C' },
+    { value: 'ungu', label: 'Ungu', hex: '#9333EA' },
+    { value: 'emas', label: 'Emas', hex: '#F59E0B' },
+    { value: 'silver', label: 'Silver', hex: '#94A3B8' },
+  ],
+
+  LOGO_POSITIONS: [
+    { value: 'left', label: 'Kiri', icon: '◀' },
+    { value: 'right', label: 'Kanan', icon: '▶' },
+    { value: 'center', label: 'Tengah', icon: '●' },
+    { value: 'top', label: 'Atas', icon: '▲' },
+    { value: 'bottom', label: 'Bawah', icon: '▼' },
+  ],
+
+  LOGO_SIZES: [
+    { value: 'small', label: 'Kecil (3x3 cm)', priceAdd: 0 },
+    { value: 'medium', label: 'Sedang (5x5 cm)', priceAdd: 10000 },
+    { value: 'large', label: 'Besar (8x8 cm)', priceAdd: 20000 },
+  ]
+}
+
 export const DEFAULT_LEAD_TIME_DAYS = 3;
 export const SITE_NAME = 'Nilam Bordir';
 export const CONTACT_WHATSAPP = '6281234567890';
