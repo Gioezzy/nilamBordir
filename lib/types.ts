@@ -32,10 +32,13 @@ export interface OrderWithDetails extends Order {
 }
 
 export interface CartItem {
-  product: Product;
-  quantity: number;
-  design?: Design;
-  customDescription?: string;
+  id: string
+  productId: string
+  productName: string
+  quantity: number
+  price: number
+  image?:string
+  customization?: OrderCostomization
 }
 
 export interface ProductWithCategory extends Product {
@@ -45,4 +48,21 @@ export interface ProductWithCategory extends Product {
 export interface DesignWithUser extends Design {
   profile: Profile;
   category: Category | null;
+}
+
+export interface OrderCostomization {
+  titik: string
+  layout: string
+  font: string
+  threadColor: string
+  textLines: string[]
+  hasLogo: boolean
+  logoPosition?:string
+  logoSize?:string
+  logoFileUrl?:string
+  designRefernceUrls?:string[]
+  additionalNotes?: string
+  basePriceFromTitik: number
+  logoPrice: number
+  totalPrice: number
 }
