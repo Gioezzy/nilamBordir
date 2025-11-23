@@ -138,7 +138,7 @@ export const getUserOrders = cache(async (filters?: {
   }
 
   let query = supabase
-    .from('oders')
+    .from('orders')
     .select(`
       *,
       order_items(

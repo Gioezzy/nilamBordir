@@ -10,6 +10,14 @@ import { OrderCostomization } from '@/lib/types';
 import { formatRupiah } from '@/lib/utils';
 import { Plus, Minus, Upload, X } from 'lucide-react';
 import Image from 'next/image';
+import SalempangPreview from './product-preview';
+
+interface SalempangContent {
+  id: string;
+  type: 'text' | 'logo';
+  value: string;
+  position: 'left' | 'right';
+}
 
 interface OrderFormBuilderProps {
   productBasePrice: number;
@@ -26,68 +34,55 @@ export default function OrderFormBuilder({
   const [threadColor, setThreadColor] = useState(
     BORDIR_CONFIG.THREAD_COLORS[0].value
   );
-  const [textLines, setTextLines] = useState<string[]>(['', '', '']);
-  const [hasLogo, setHasLogo] = useState(false);
-  const [logoPosition, setLogoPosition] = useState(
-    BORDIR_CONFIG.LOGO_POSITIONS[0].value
-  );
-  const [logoSize, setLogoSize] = useState(BORDIR_CONFIG.LOGO_SIZES[0].value);
+
+  const [contents, setContents] = useState<SalempangContent[]>([]);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [additionalNotes, setAdditionalNotes] = useState('');
 
-  const calculatePrice = useCallback(() => {
-    const titikOption = BORDIR_CONFIG.TITIK_OPTIONS.find(
-      t => t.value === titik
-    );
-    const basePriceFromTitik = titikOption?.price || productBasePrice;
-
-    let logoPrice = 0;
-    if (hasLogo) {
-      const sizeOption = BORDIR_CONFIG.LOGO_SIZES.find(
-        s => s.value === logoSize
-      );
-      logoPrice = sizeOption?.priceAdd || 0;
-    }
-
-    return {
-      basePriceFromTitik,
-      logoPrice,
-      totalPrice: basePriceFromTitik + logoPrice,
-    };
-  }, [titik, hasLogo, logoSize, productBasePrice]);
+  const maxTitik = parseInt(titik) || 2;
 
   useEffect(() => {
-    const prices = calculatePrice();
+    const defaultContents: SalempangContent[] = [];
+    for (let i = 0; i < Math.min(2, maxTitik); i++) {
+      defaultContents.push({
+        id: `text-${i}`,
+        type: 'text',
+        value: '',
+        position: i === 0 ? 'left' : 'right',
+      });
+    }
+    setContents(defaultContents);
+  }, []);
 
-    const customization: OrderCostomization = {
-      titik,
-      layout,
-      font,
-      threadColor,
-      textLines: textLines.filter(t => t.trim() !== ''),
-      hasLogo,
-      logoPosition: hasLogo ? logoPosition : undefined,
-      logoSize: hasLogo ? logoSize : undefined,
-      additionalNotes: additionalNotes || undefined,
-      ...prices,
+  useEffect(() => {
+    if (contents.length > maxTitik) {
+      setContents(contents.slice(0, maxTitik));
+    }
+  }, [titik, maxTitik, contents]);
+
+  const addContent = (type: 'text' | 'logo') => {
+    if (contents.length >= maxTitik) {
+      return;
+    }
+
+    const newContent: SalempangContent = {
+      id: `${type}-${Date.now()}`,
+      type,
+      value: type === 'logo' && logoPreview ? logoPreview : '',
+      position: contents.length % 2 === 0 ? 'left' : 'right',
     };
 
-    onCustomizationChange(customization);
-  }, [
-    titik,
-    layout,
-    font,
-    threadColor,
-    textLines,
-    hasLogo,
-    logoPosition,
-    logoSize,
-    logoPreview,
-    additionalNotes,
-    calculatePrice,
-    onCustomizationChange,
-  ]);
+    setContents([...contents, newContent]);
+  };
+
+  const removeContent = (id: string) => {
+    setContents(contents.filter(c => c.id !== id));
+  };
+
+  const updateContentValue = (id: string, value: string) => {
+    setContents(contents.map(c => (c.id === id ? { ...c, value } : c)));
+  };
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -109,37 +104,69 @@ export default function OrderFormBuilder({
   const removeLogo = () => {
     setLogoFile(null);
     setLogoPreview(null);
+    setContents(contents.filter(c => c.type !== 'logo'));
   };
 
-  const addTextLine = () => {
-    if (textLines.length < 5) {
-      setTextLines([...textLines, '']);
+  const calculatePrice = useCallback(() => {
+    const titikOption = BORDIR_CONFIG.TITIK_OPTIONS.find(
+      t => t.value === titik
+    );
+    const basePriceFromTitik = titikOption?.price || productBasePrice;
+
+    const hasLogo = contents.some(c => c.type === 'logo');
+    let logoPrice = 0;
+
+    if (hasLogo) {
+      logoPrice = 10000;
     }
-  };
 
-  const removeTextLine = (index: number) => {
-    if (textLines.length > 1) {
-      setTextLines(textLines.filter((_, i) => i !== index));
-    }
-  };
+    return {
+      basePriceFromTitik,
+      logoPrice,
+      totalPrice: basePriceFromTitik + logoPrice,
+    };
+  }, [titik, contents, productBasePrice]);
 
-  const updateTextLine = (index: number, value: string) => {
-    const updated = [...textLines];
-    updated[index] = value;
-    setTextLines(updated);
-  };
+  useEffect(() => {
+    const prices = calculatePrice();
+    const textLines = contents
+      .filter(c => c.type === 'text' && c.value.trim() !== '')
+      .map(c => c.value);
 
-  const prices = calculatePrice();
+    const customization: OrderCostomization = {
+      titik,
+      layout,
+      font,
+      threadColor,
+      textLines,
+      hasLogo: contents.some(c => c.type === 'logo'),
+      logoPosition: undefined,
+      logoSize: undefined,
+      additionalNotes: additionalNotes || undefined,
+      ...prices,
+    };
+
+    onCustomizationChange(customization);
+  }, [
+    titik,
+    layout,
+    font,
+    threadColor,
+    contents,
+    additionalNotes,
+    calculatePrice,
+    onCustomizationChange,
+  ]);
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-4">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="space-y-6">
         <div>
           <Label className="text-base font-semibold">
-            1. Pilih Model Bordir
+            1. Pilih Jumlah Titik
           </Label>
           <p className="text-sm text-gray-600 mb-3">
-            Pilih jumlah titik dan layout
+            Menentukan berapa banyak konten yang bisa ditambahkan
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -164,45 +191,7 @@ export default function OrderFormBuilder({
         </div>
 
         <div>
-          <Label>Layout</Label>
-          <div className="flex gap-3 mt-2">
-            {BORDIR_CONFIG.LAYOUT_TYPES.map(type => (
-              <button
-                key={type.value}
-                type="button"
-                onClick={() => setLayout(type.value)}
-                className={`flex-1 p-3 border-2 rounded-lg transition-all ${
-                  layout === type.value
-                    ? 'border-gray-900 bg-gray-50'
-                    : 'border-gray-200 hover:border-gray-400'
-                }`}
-              >
-                <span className="text-2xl">{type.icon}</span>
-                <p className="text-sm mt-1">{type.label}</p>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-4">
-        <div>
-          <Label>2. Font Style</Label>
-          <select
-            value={font}
-            onChange={e => setFont(e.target.value)}
-            className="w-full mt-2 p-2 border rounded-lg"
-          >
-            {BORDIR_CONFIG.FONT_STYLES.map(style => (
-              <option key={style.value} value={style.value}>
-                {style.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <Label>Warna Benang</Label>
+          <Label>2. Warna Benang</Label>
           <div className="grid grid-cols-5 gap-2 mt-2">
             {BORDIR_CONFIG.THREAD_COLORS.map(color => (
               <button
@@ -227,185 +216,153 @@ export default function OrderFormBuilder({
             }
           </p>
         </div>
-      </div>
 
-      <div>
-        <div className="flex items-center justify-between mb-2">
+        <div>
           <Label className="text-base font-semibold">
-            3. Konten Text Bordir
+            3. Kelola Konten ({contents.length}/{maxTitik})
           </Label>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={addTextLine}
-            disabled={textLines.length >= 5}
-          >
-            <Plus className="w-4 h-4 mr-1" />
-            Tambah Baris
-          </Button>
-        </div>
-        <p className="text-sm text-gray-600 mb-3">Maksimal 5 baris</p>
+          <p className="text-sm text-gray-600 mb-3">
+            Tambahkan teks atau logo sesuai kebutuhan
+          </p>
 
-        <div className="space-y-3">
-          {textLines.map((line, index) => (
-            <div key={index} className="flex gap-2">
-              <Input
-                placeholder={`Baris ${index + 1}`}
-                value={line}
-                onChange={e => updateTextLine(index, e.target.value)}
+          <div className="space-y-3 mb-4">
+            {contents.map((content, index) => (
+              <div key={content.id} className="flex gap-2 items-center">
+                {content.type === 'text' ? (
+                  <>
+                    <Input
+                      placeholder={`Teks ${index + 1}`}
+                      value={content.value}
+                      onChange={e =>
+                        updateContentValue(content.id, e.target.value)
+                      }
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeContent(content.id)}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </>
+                ) : (
+                  <div className="flex-1 flex items-center gap-2 p-2 border rounded-lg">
+                    {content.value && (
+                      <div className="w-10 h-10 relative">
+                        <Image
+                          src={content.value}
+                          alt="Logo"
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                    )}
+                    <span className="text-sm flex-1">Logo</span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeContent(content.id)}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {contents.length < maxTitik && (
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => addContent('text')}
                 className="flex-1"
-              />
-              {textLines.length > 1 && (
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Tambah Teks
+              </Button>
+
+              {!contents.some(c => c.type === 'logo') && (
                 <Button
                   type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removeTextLine(index)}
+                  variant="outline"
+                  onClick={() => {
+                    if (logoPreview) {
+                      addContent('logo');
+                    } else {
+                      document.getElementById('logo-upload')?.click();
+                    }
+                  }}
+                  className="flex-1"
                 >
-                  <Minus className="w-4 h-4" />
+                  <Upload className="w-4 h-4 mr-2" />
+                  Tambah Logo
                 </Button>
               )}
             </div>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <input
-            type="checkbox"
-            id="hasLogo"
-            checked={hasLogo}
-            onChange={e => setHasLogo(e.target.checked)}
-            className="w-4 h-4"
-          />
-          <Label
-            htmlFor="hasLogo"
-            className="text-base font-semibold cursor-pointer"
-          >
-            4. Tambah Logo (Opsional)
-          </Label>
-        </div>
-
-        {hasLogo && (
-          <div className="space-y-4 pl-6 border-l-2">
-            <div>
-              <Label>Upload Logo</Label>
-              {logoPreview ? (
-                <div className="mt-2 relative w-32 h-32 border rounded-lg overflow-hidden">
-                  <Image
-                    src={logoPreview}
-                    alt="Logo preview"
-                    fill
-                    className="object-contain"
-                  />
-                  <button
-                    type="button"
-                    onClick={removeLogo}
-                    className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              ) : (
-                <label className="mt-2 flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-50">
-                  <Upload className="w-8 h-8 text-gray-400 mb-2" />
-                  <p className="text-sm text-gray-600">Klik untuk upload</p>
-                  <p className="text-xs text-gray-500">PNG, JPG, max 5MB</p>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleLogoUpload}
-                    className="hidden"
-                  />
-                </label>
-              )}
-            </div>
-
-            <div>
-              <Label>Posisi Logo</Label>
-              <div className="grid grid-cols-5 gap-2 mt-2">
-                {BORDIR_CONFIG.LOGO_POSITIONS.map(pos => (
-                  <button
-                    key={pos.value}
-                    type="button"
-                    onClick={() => setLogoPosition(pos.value)}
-                    className={`p-3 border-2 rounded-lg transition-all ${
-                      logoPosition === pos.value
-                        ? 'border-gray-900 bg-gray-50'
-                        : 'border-gray-200 hover:border-gray-400'
-                    }`}
-                  >
-                    <span className="text-xl">{pos.icon}</span>
-                    <p className="text-xs mt-1">{pos.label}</p>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <Label>Ukuran Logo</Label>
-              <div className="space-y-2 mt-2">
-                {BORDIR_CONFIG.LOGO_SIZES.map(size => (
-                  <button
-                    key={size.value}
-                    type="button"
-                    onClick={() => setLogoSize(size.value)}
-                    className={`w-full p-3 border-2 rounded-lg text-left transition-all ${
-                      logoSize === size.value
-                        ? 'border-gray-900 bg-gray-50'
-                        : 'border-gray-200 hover:border-gray-400'
-                    }`}
-                  >
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium">{size.label}</span>
-                      {size.priceAdd > 0 && (
-                        <span className="text-sm text-gray-600">
-                          +{formatRupiah(size.priceAdd)}
-                        </span>
-                      )}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div>
-        <Label>5. Catatan Tambahan (Opsional)</Label>
-        <Textarea
-          placeholder="Contoh: Mohon benang jangan terlalu kencang, atau tambahan instruksi lainnya..."
-          value={additionalNotes}
-          onChange={e => setAdditionalNotes(e.target.value)}
-          rows={4}
-          className="mt-2"
-        />
-      </div>
-
-      <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-        <h3 className="font-semibold">Ringkasan Harga</h3>
-        <div className="space-y-1 text-sm">
-          <div className="flex justify-between">
-            <span>
-              Harga Dasar (
-              {BORDIR_CONFIG.TITIK_OPTIONS.find(t => t.value === titik)?.label})
-            </span>
-            <span>{formatRupiah(prices.basePriceFromTitik)}</span>
-          </div>
-          {hasLogo && prices.logoPrice > 0 && (
-            <div className="flex justify-between text-gray-600">
-              <span>Tambahan Logo</span>
-              <span>+{formatRupiah(prices.logoPrice)}</span>
-            </div>
           )}
-          <div className="border-t pt-2 flex justify-between font-bold text-lg">
-            <span>Total</span>
-            <span>{formatRupiah(prices.totalPrice)}</span>
+
+          <input
+            id="logo-upload"
+            type="file"
+            accept="image/*"
+            onChange={handleLogoUpload}
+            className="hidden"
+          />
+        </div>
+
+        <div>
+          <Label>4. Catatan Tambahan (Opsional)</Label>
+          <Textarea
+            placeholder="Tambahan instruksi..."
+            value={additionalNotes}
+            onChange={e => setAdditionalNotes(e.target.value)}
+            rows={4}
+            className="mt-2"
+          />
+        </div>
+
+        <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+          <h3 className="font-semibold">Ringkasan Harga</h3>
+          <div className="space-y-1 text-sm">
+            <div className="flex justify-between">
+              <span>
+                Harga Dasar (
+                {
+                  BORDIR_CONFIG.TITIK_OPTIONS.find(t => t.value === titik)
+                    ?.label
+                }
+                )
+              </span>
+              <span>{formatRupiah(calculatePrice().basePriceFromTitik)}</span>
+            </div>
+            {calculatePrice().logoPrice > 0 && (
+              <div className="flex justify-between text-gray-600">
+                <span>Tambahan Logo</span>
+                <span>+{formatRupiah(calculatePrice().logoPrice)}</span>
+              </div>
+            )}
+            <div className="border-t pt-2 flex justify-between font-bold text-lg">
+              <span>Total</span>
+              <span>{formatRupiah(calculatePrice().totalPrice)}</span>
+            </div>
           </div>
         </div>
+      </div>
+
+      <div className="lg:sticky lg:top-24 self-start">
+        <SalempangPreview
+          titik={titik}
+          textLines={contents.filter(c => c.type === 'text').map(c => c.value)}
+          logoUrl={logoPreview || undefined}
+          threadColor={threadColor}
+          contents={contents}
+          onContentsChange={setContents}
+        />
       </div>
     </div>
   );

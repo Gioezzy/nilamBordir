@@ -31,9 +31,9 @@ export default function CancelOrderButton({ orderId }: CancelOrderButtonProps) {
       const result = await cancelOrderAction(orderId);
 
       if (result.error) {
-        toast.error(result.error);
+        toast.error(result.error, { id: 'order-cancel-error' });
       } else {
-        toast.success('Pesanan berhasil dibatalkan');
+        toast.success('Pesanan berhasil dibatalkan', { id: 'order-cancel' });
         setIsOpen(false);
         router.refresh();
       }
