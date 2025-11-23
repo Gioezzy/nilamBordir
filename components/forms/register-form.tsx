@@ -28,7 +28,7 @@ export default function RegisterForm() {
 
     if (password !== confirmPassword) {
       setError('Password tidak cocok');
-      toast.error('Password tidak cocok');
+      toast.error('Password tidak cocok', { id: 'register-password-mismatch' });
       return;
     }
 
@@ -37,16 +37,18 @@ export default function RegisterForm() {
 
       if (result?.error) {
         setError(result.error);
-        toast.error(result.error);
+        toast.error(result.error, { id: 'register-error' });
       } else if (result?.success) {
         if (result.autoLogin) {
-          toast.success('Registrasi berhasil! Mengalihkan...');
+          toast.success('Registrasi berhasil! Mengalihkan...', {
+            id: 'register-success',
+          });
           setTimeout(() => {
             router.push('/dashboard');
           }, 1000);
         } else {
           setSuccess(true);
-          toast.success(result.message);
+          toast.success(result.message, { id: 'register-email-sent' });
         }
       }
     });
@@ -56,7 +58,7 @@ export default function RegisterForm() {
     startTransition(async () => {
       const result = await signInWithGoogleAction();
       if (result?.error) {
-        toast.error(result.error);
+        toast.error(result.error, { id: 'google-register-error' });
       }
     });
   }

@@ -28,12 +28,14 @@ export default function ProfileEditForm({ profile }: ProfileEditFormProps) {
     e.preventDefault();
 
     if (!formData.fullName.trim()) {
-      toast.error('Nama lengkap wajib diisi');
+      toast.error('Nama lengkap wajib diisi', { id: 'profile-validation' });
       return;
     }
 
     if (!formData.phone.trim()) {
-      toast.error('Nomor telepon wajib diisi');
+      toast.error('Nomor telepon wajib diisi', {
+        id: 'profile-phone-validation',
+      });
       return;
     }
 
@@ -41,9 +43,9 @@ export default function ProfileEditForm({ profile }: ProfileEditFormProps) {
       const result = await UpdateProfileInput(formData);
 
       if (result.error) {
-        toast.error(result.error);
+        toast.error(result.error, { id: 'profile-update-error' });
       } else {
-        toast.success('Profil berhasil diupdate');
+        toast.success('Profil berhasil diupdate', { id: 'profile-update' });
       }
     });
   };

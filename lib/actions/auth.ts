@@ -10,19 +10,40 @@ export async function loginAction(formData: FormData) {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
 
   if (error) {
-    if ( error.message.includes('Email not confirmed')){
-      return {error: 'Email belum diverifikasi, Silahkan cek inbox Anda'}
+    if (error.message.includes('Email not confirmed')) {
+      return { error: 'Email belum diverifikasi, Silahkan cek inbox Anda' };
     }
-    return { error: error.message}
+    return { error: error.message };
   }
 
-  redirect('/');
+  if (!data.user) {
+    return { error: 'Login gagal. Silahkan coba lagi.' };
+  }
+
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', data.user.id)
+    .single();
+
+  if (profileError) {
+    console.error('Error fetching user role:', profileError);
+    return { error: 'Gagal mengambil data user' };
+  }
+
+  const role = profile?.role;
+
+  if (role === 'admin') {
+    redirect('/admin');
+  } else {
+    redirect('/dashboard');
+  }
 }
 
 export async function registerAction(formData: FormData) {

@@ -19,7 +19,7 @@ export default function LoginForm() {
       const result = await loginAction(formData);
       if (result?.error) {
         setError(result.error);
-        toast.error(result.error);
+        toast.error(result.error, { id: 'login-error' });
       }
     });
   }
@@ -28,7 +28,7 @@ export default function LoginForm() {
     startTransition(async () => {
       const result = await signInWithGoogleAction();
       if (result?.error) {
-        toast.error(result.error);
+        toast.error(result.error, { id: 'google-login-error' });
       }
     });
   }

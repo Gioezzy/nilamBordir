@@ -19,13 +19,15 @@ export default function ChangePasswordForm() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const form = e.currentTarget
+    const form = e.currentTarget;
     const formData = new FormData(form);
     const newPassword = formData.get('newPassword') as string;
     const confirmPassword = formData.get('confirmPassword') as string;
 
     if (newPassword !== confirmPassword) {
-      toast.error('Password konfirmasi tidak cocok');
+      toast.error('Password konfirmasi tidak cocok', {
+        id: 'password-mismatch',
+      });
       return;
     }
 
@@ -33,9 +35,9 @@ export default function ChangePasswordForm() {
       const result = await updatePasswordAction(formData);
 
       if (result.error) {
-        toast.error(result.error);
+        toast.error(result.error, { id: 'password-change-error' });
       } else {
-        toast.success('Password berhasil diubah');
+        toast.success('Password berhasil diubah', { id: 'password-change' });
         form.reset();
       }
     });

@@ -1,67 +1,107 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { updateSession } from './lib/supabase/middleware';
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
- * Updates the Supabase session for the given request.
+ * Middleware for handling authentication and authorization
  * @param request The NextRequest object representing the incoming request.
  * @returns A NextResponse object with the updated session information.
  */
-
 export async function middleware(request: NextRequest) {
   const { response, user, supabase } = await updateSession(request);
-
   const { pathname } = request.nextUrl;
+
+  if (pathname.startsWith('/auth/callback')){
+    return response;
+  }
 
   const isAuthRoute =
     pathname.startsWith('/login') ||
     pathname.startsWith('/register') ||
-    pathname.startsWith('/forgot-password');
+    pathname.startsWith('/forgot-password') ||
+    pathname.startsWith('/reset-password');
 
   const isAdminRoute = pathname.startsWith('/admin');
 
   const isProtectedRoute =
     pathname.startsWith('/dashboard') ||
-    pathname.startsWith('/pesanan') ||
-    pathname.startsWith('/profile');
+    pathname.startsWith('/orders') || 
+    pathname.startsWith('/profile') ||
+    pathname.startsWith('/upload-design');
 
-  // if user is not logged in and trying to accrss protected route
+  const isPublicRoute =
+    pathname === '/' ||
+    pathname.startsWith('/shop') ||
+    pathname.startsWith('/product/') ||
+    pathname.startsWith('/category/') ||
+    pathname.startsWith('/cart') ||
+    pathname.startsWith('/about') ||
+    pathname.startsWith('/checkout'); 
+
+  // ======================================
+  // 1. Handle Unauthenticated Users
+  // ======================================
   if (!user) {
     if (isAdminRoute || isProtectedRoute) {
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('redirect', pathname);
       return NextResponse.redirect(loginUrl);
     }
+    
+    if (pathname.startsWith('/checkout')) {
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('redirect', '/checkout');
+      return NextResponse.redirect(loginUrl);
+    }
 
     return response;
   }
 
-  // if user is logged in and trying to access auth route
+  // ======================================
+  // 2. Handle Authenticated Users
+  // ======================================
+
   if (isAuthRoute) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    const role = (request.cookies.get('user_role')?.value || '').toLowerCase();
+
+    return NextResponse.redirect(
+      new URL(role === 'admin' ? '/admin' : '/dashboard', request.url)
+    );
   }
 
-  // if user is logged in and trying to access admin route
+  // ======================================
+  // 3. Handle Admin Routes
+  // ======================================
   if (isAdminRoute) {
     let role = request.cookies.get('user_role')?.value;
 
     if (!role) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
+      try {
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
 
-      role = profile?.role;
+        if (error) {
+          console.error('Error fetching user role:', error);
+          return NextResponse.redirect(new URL('/dashboard', request.url));
+        }
 
-      // set role in cookies
-      if (role) {
-        response.cookies.set('user_role', role, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          maxAge: 60 * 10,
-          sameSite: 'lax',
-          path: '/',
-        });
+        role = profile?.role;
+
+        if (role) {
+          response.cookies.set('user_role', role, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 60 * 10, 
+            sameSite: 'lax',
+            path: '/',
+          });
+        }
+      } catch (error) {
+        console.error('Middleware error:', error);
+        return NextResponse.redirect(new URL('/dashboard', request.url));
       }
     }
 
@@ -75,6 +115,14 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
+    /*
+     * Match all request paths except:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico
+     * - public folder files
+     * - api routes (they have their own auth)
+     */
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$|api).*)',
   ],
 };
