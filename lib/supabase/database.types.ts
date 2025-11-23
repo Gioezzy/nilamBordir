@@ -62,7 +62,7 @@ export type Database = {
           is_active: boolean | null
           name: string
           slug: string
-          update_at: string | null
+          updated_at: string | null
         }
         Insert: {
           created_at?: string | null
@@ -73,7 +73,7 @@ export type Database = {
           is_active?: boolean | null
           name: string
           slug: string
-          update_at?: string | null
+          updated_at?: string | null
         }
         Update: {
           created_at?: string | null
@@ -84,7 +84,7 @@ export type Database = {
           is_active?: boolean | null
           name?: string
           slug?: string
-          update_at?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }

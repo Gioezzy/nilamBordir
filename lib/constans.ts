@@ -70,7 +70,7 @@ export const BORDIR_CONFIG = {
     {value: '3', label: '3 Titik Vertikal', price: 70000},
     {value: '4_datar', label: '4 Titik Datar', price: 70000},
     {value: '4', label: '4 Titik', price: 75000},
-    {value: '4_vertikal', label: '4 Titik Vertila', price: 75000},
+    {value: '4_vertikal', label: '4 Titik Vertikal', price: 75000},
     {value: '4_garis', label: '4 Titik Garis', price: 75000},
     {value: '5_garus', label: '5 Titik Garis', price: 80000}
   ],
