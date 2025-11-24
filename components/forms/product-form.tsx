@@ -157,33 +157,44 @@ export default function ProductForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-4">
-        <div>
-          <Label htmlFor="name">Nama Produk *</Label>
-          <Input
-            id="name"
-            value={formData.name}
-            onChange={e => setFormData({ ...formData, name: e.target.value })}
-            placeholder="Contoh: Bordir Nama 3 Titik"
-            required
-            disabled={isPending}
-          />
+    <form onSubmit={handleSubmit} className="space-y-8">
+      <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 space-y-6">
+        <h2 className="text-xl font-semibold mb-2">Informasi Produk</h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label htmlFor="name">
+              Nama Produk <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              id="name"
+              value={formData.name}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
+              placeholder="Contoh: Bordir Nama 3 Titik"
+              required
+              disabled={isPending}
+              className="rounded-xl"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="sku">SKU (Opsional)</Label>
+            <Input
+              id="sku"
+              value={formData.sku}
+              onChange={e => setFormData({ ...formData, sku: e.target.value })}
+              placeholder="Contoh: BRD-001"
+              disabled={isPending}
+              className="rounded-xl"
+            />
+          </div>
         </div>
 
-        <div>
-          <Label htmlFor="sku">SKU (Opsional)</Label>
-          <Input
-            id="sku"
-            value={formData.sku}
-            onChange={e => setFormData({ ...formData, sku: e.target.value })}
-            placeholder="Contoh: BRD-001"
-            disabled={isPending}
-          />
-        </div>
+        <div className="space-y-2 w-full">
+          <Label htmlFor="category">
+            Kategori <span className="text-red-500">*</span>
+          </Label>
 
-        <div>
-          <Label htmlFor="category">Kategori *</Label>
           <Select
             value={formData.category_id}
             onValueChange={value =>
@@ -191,12 +202,17 @@ export default function ProductForm({
             }
             disabled={isPending}
           >
-            <SelectTrigger>
+            <SelectTrigger className="rounded-xl w-full h-11 px-4">
               <SelectValue placeholder="Pilih kategori" />
             </SelectTrigger>
-            <SelectContent>
+
+            <SelectContent className="z-50 mt-1 shadow-xl border border-gray-200 rounded-xl">
               {categories.map(category => (
-                <SelectItem key={category.id} value={category.id}>
+                <SelectItem
+                  key={category.id}
+                  value={category.id}
+                  className="cursor-pointer text-sm py-2 hover:bg-gray-100 focus:bg-gray-100"
+                >
                   {category.name}
                 </SelectItem>
               ))}
@@ -204,7 +220,7 @@ export default function ProductForm({
           </Select>
         </div>
 
-        <div>
+        <div className="space-y-2">
           <Label htmlFor="description">Deskripsi</Label>
           <Textarea
             id="description"
@@ -215,12 +231,15 @@ export default function ProductForm({
             placeholder="Deskripsi produk..."
             rows={4}
             disabled={isPending}
+            className="rounded-xl"
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="price">Harga *</Label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label htmlFor="price">
+              Harga <span className="text-red-500">*</span>
+            </Label>
             <Input
               id="price"
               type="number"
@@ -231,11 +250,14 @@ export default function ProductForm({
               placeholder="0"
               required
               disabled={isPending}
+              className="rounded-xl"
             />
           </div>
 
-          <div>
-            <Label htmlFor="lead_time">Lead Time (Hari) *</Label>
+          <div className="space-y-2">
+            <Label htmlFor="lead_time">
+              Lead Time (Hari) <span className="text-red-500">*</span>
+            </Label>
             <Input
               id="lead_time"
               type="number"
@@ -249,11 +271,12 @@ export default function ProductForm({
               min="1"
               required
               disabled={isPending}
+              className="rounded-xl"
             />
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 pt-2">
           <input
             type="checkbox"
             id="is_active"
@@ -261,7 +284,7 @@ export default function ProductForm({
             onChange={e =>
               setFormData({ ...formData, is_active: e.target.checked })
             }
-            className="w-4 h-4"
+            className="w-5 h-5 rounded"
             disabled={isPending}
           />
           <Label htmlFor="is_active" className="cursor-pointer">
@@ -270,14 +293,16 @@ export default function ProductForm({
         </div>
       </div>
 
-      <div className="space-y-3">
-        <Label>Gambar Produk * (Maksimal 5)</Label>
+      <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 space-y-4">
+        <Label className="font-semibold">
+          Gambar Produk <span className="text-red-500">*</span> (Maksimal 5)
+        </Label>
 
-        <div className="grid grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {imagePreviews.map((preview, index) => (
             <div
               key={index}
-              className="relative aspect-square border-2 border-gray-200 rounded-lg overflow-hidden"
+              className="relative aspect-square border border-gray-300 dark:border-gray-700 rounded-xl overflow-hidden group"
             >
               <Image
                 src={preview}
@@ -288,29 +313,30 @@ export default function ProductForm({
               <button
                 type="button"
                 onClick={() => removeImage(index)}
-                className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                className="absolute top-1 right-1 p-1 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition"
               >
                 <X className="w-4 h-4" />
               </button>
               {index === 0 && (
-                <div className="absolute bottom-1 left-1 bg-blue-500 text-white text-xs px-2 py-1 rounded">
+                <span className="absolute bottom-1 left-1 bg-blue-600 text-white text-[10px] px-2 py-1 rounded">
                   Utama
-                </div>
+                </span>
               )}
             </div>
           ))}
 
           {images.length < 5 && (
-            <label className="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 transition-colors">
-              <Upload className="w-8 h-8 text-gray-400 mb-2" />
-              <span className="text-sm text-gray-600">Upload</span>
+            <label className="aspect-square border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-gray-400 transition">
+              <Upload className="w-8 h-8 text-gray-500" />
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                Upload gambar
+              </span>
               <input
                 type="file"
                 accept="image/*"
                 multiple
                 onChange={handleImageUpload}
                 className="hidden"
-                disabled={isPending}
               />
             </label>
           )}
@@ -321,17 +347,18 @@ export default function ProductForm({
         </p>
       </div>
 
-      <div className="flex gap-3 pt-4 border-t">
-        <Button type="submit" disabled={isPending} className="flex-1">
-          {isPending ? 'Menyimpan...' : 'Simpan Produk'}
-        </Button>
+      <div className="flex gap-3 pt-2 justify-end">
         <Button
           type="button"
           variant="outline"
           onClick={() => router.back()}
           disabled={isPending}
+          className="rounded-xl px-6"
         >
           Batal
+        </Button>
+        <Button type="submit" disabled={isPending} className="rounded-xl px-6">
+          {isPending ? 'Menyimpan...' : 'Simpan Produk'}
         </Button>
       </div>
     </form>

@@ -6,6 +6,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -178,204 +179,202 @@ export default function ProductEditForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-4">
-        <div>
-          <Label htmlFor="name">Nama Produk *</Label>
-          <Input
-            id="name"
-            value={formData.name}
-            onChange={e => setFormData({ ...formData, name: e.target.value })}
-            placeholder="Contoh: Bordir Nama 3 Titik"
-            required
-            disabled={isPending}
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="sku">SKU (Opsional)</Label>
-          <Input
-            id="sku"
-            value={formData.sku}
-            onChange={e => setFormData({ ...formData, sku: e.target.value })}
-            placeholder="Contoh: BRD-001"
-            disabled={isPending}
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="category">Kategori *</Label>
-          <Select
-            value={formData.category_id}
-            onValueChange={value =>
-              setFormData({ ...formData, category_id: value })
-            }
-            disabled={isPending}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Pilih kategori" />
-            </SelectTrigger>
-            <SelectContent>
-              {categories.map(category => (
-                <SelectItem key={category.id} value={category.id}>
-                  {category.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <Label htmlFor="description">Deskripsi</Label>
-          <Textarea
-            id="description"
-            value={formData.description}
-            onChange={e =>
-              setFormData({ ...formData, description: e.target.value })
-            }
-            placeholder="Deskripsi produk..."
-            rows={4}
-            disabled={isPending}
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="price">Harga *</Label>
+    <form onSubmit={handleSubmit} className="space-y-8">
+      {/* === Informasi Produk === */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold">
+            Informasi Produk
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          <div className="space-y-2">
+            <Label htmlFor="name">Nama Produk *</Label>
             <Input
-              id="price"
-              type="number"
-              value={formData.price}
-              onChange={e =>
-                setFormData({ ...formData, price: Number(e.target.value) })
-              }
-              placeholder="0"
+              id="name"
+              value={formData.name}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
+              placeholder="Contoh: Bordir Nama 3 Titik"
               required
               disabled={isPending}
             />
           </div>
 
-          <div>
-            <Label htmlFor="lead_time">Lead Time (Hari) *</Label>
+          <div className="space-y-2">
+            <Label htmlFor="sku">SKU (Opsional)</Label>
             <Input
-              id="lead_time"
-              type="number"
-              value={formData.lead_time_days}
-              onChange={e =>
-                setFormData({
-                  ...formData,
-                  lead_time_days: Number(e.target.value),
-                })
-              }
-              min="1"
-              required
+              id="sku"
+              value={formData.sku}
+              onChange={e => setFormData({ ...formData, sku: e.target.value })}
+              placeholder="Contoh: BRD-001"
               disabled={isPending}
             />
           </div>
-        </div>
 
-        <div className="flex items-center gap-3">
-          <input
-            type="checkbox"
-            id="is_active"
-            checked={formData.is_active}
-            onChange={e =>
-              setFormData({ ...formData, is_active: e.target.checked })
-            }
-            className="w-4 h-4"
-            disabled={isPending}
-          />
-          <Label htmlFor="is_active" className="cursor-pointer">
-            Aktifkan produk (tampilkan di website)
-          </Label>
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        <Label>Gambar Produk * (Maksimal 5)</Label>
-
-        <div className="grid grid-cols-5 gap-4">
-          {existingImages.map((image, index) => (
-            <div
-              key={`existing-${index}`}
-              className="relative aspect-square border-2 border-gray-200 rounded-lg overflow-hidden"
+          <div className="space-y-2">
+            <Label htmlFor="category">Kategori *</Label>
+            <Select
+              value={formData.category_id}
+              onValueChange={value =>
+                setFormData({ ...formData, category_id: value })
+              }
+              disabled={isPending}
             >
-              <Image
-                src={image.url}
-                alt={`Existing ${index + 1}`}
-                fill
-                className="object-cover"
-              />
-              <button
-                type="button"
-                onClick={() => removeExistingImage(index)}
-                className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-              >
-                <X className="w-4 h-4" />
-              </button>
-              {index === 0 && (
-                <div className="absolute bottom-1 left-1 bg-blue-500 text-white text-xs px-2 py-1 rounded">
-                  Utama
-                </div>
-              )}
-            </div>
-          ))}
+              <SelectTrigger className="w-full h-12 rounded-xl">
+                <SelectValue placeholder="Pilih kategori" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map(category => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-          {newImagePreviews.map((preview, index) => (
-            <div
-              key={`new-${index}`}
-              className="relative aspect-square border-2 border-green-300 rounded-lg overflow-hidden"
-            >
-              <Image
-                src={preview}
-                alt={`New ${index + 1}`}
-                fill
-                className="object-cover"
-              />
-              <button
-                type="button"
-                onClick={() => removeNewImage(index)}
-                className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-              >
-                <X className="w-4 h-4" />
-              </button>
-              <div className="absolute bottom-1 left-1 bg-green-500 text-white text-xs px-2 py-1 rounded">
-                Baru
-              </div>
-            </div>
-          ))}
+          <div className="space-y-2">
+            <Label htmlFor="description">Deskripsi</Label>
+            <Textarea
+              id="description"
+              value={formData.description}
+              onChange={e =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+              placeholder="Deskripsi produk..."
+              rows={5}
+              disabled={isPending}
+              className="rounded-xl"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
-          {existingImages.length + newImages.length < 5 && (
-            <label className="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 transition-colors">
-              <Upload className="w-8 h-8 text-gray-400 mb-2" />
-              <span className="text-sm text-gray-600">Upload</span>
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleImageUpload}
-                className="hidden"
+      {/* === Harga & Lead Time === */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold">
+            Harga & Lead Time
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="price">Harga *</Label>
+              <Input
+                id="price"
+                type="number"
+                value={formData.price}
+                onChange={e =>
+                  setFormData({ ...formData, price: Number(e.target.value) })
+                }
+                placeholder="0"
+                required
                 disabled={isPending}
               />
-            </label>
-          )}
-        </div>
+            </div>
 
-        <p className="text-sm text-gray-500">
-          Gambar pertama akan menjadi gambar utama produk
-        </p>
-      </div>
+            <div className="space-y-2">
+              <Label htmlFor="lead_time">Lead Time (Hari) *</Label>
+              <Input
+                id="lead_time"
+                type="number"
+                value={formData.lead_time_days}
+                onChange={e =>
+                  setFormData({
+                    ...formData,
+                    lead_time_days: Number(e.target.value),
+                  })
+                }
+                min="1"
+                required
+                disabled={isPending}
+              />
+            </div>
+          </div>
 
-      <div className="flex gap-3 pt-4 border-t">
+          <div className="flex items-center gap-3 mt-4">
+            <input
+              type="checkbox"
+              id="is_active"
+              checked={formData.is_active}
+              onChange={e =>
+                setFormData({ ...formData, is_active: e.target.checked })
+              }
+              className="w-4 h-4"
+              disabled={isPending}
+            />
+            <Label htmlFor="is_active" className="cursor-pointer">
+              Aktifkan produk (tampilkan di website)
+            </Label>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* === Gambar Produk === */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold">Gambar Produk</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Label>Upload Gambar (maks 5)</Label>
+
+          <div className="grid grid-cols-5 gap-4 mt-2">
+            {existingImages.map((image, index) => (
+              <div
+                key={`exist-${index}`}
+                className="relative aspect-square border rounded-lg overflow-hidden"
+              >
+                <Image src={image.url} alt="" fill className="object-cover" />
+                <button
+                  type="button"
+                  onClick={() => removeExistingImage(index)}
+                  className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+
+            {newImagePreviews.map((preview, index) => (
+              <div
+                key={`new-${index}`}
+                className="relative aspect-square border rounded-lg overflow-hidden"
+              >
+                <Image src={preview} alt="" fill className="object-cover" />
+                <button
+                  type="button"
+                  onClick={() => removeNewImage(index)}
+                  className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+
+            {existingImages.length + newImages.length < 5 && (
+              <label className="aspect-square border border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50">
+                <Upload className="w-8 h-8 opacity-60 mb-1" />
+                <span className="text-xs text-gray-500">Upload</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+              </label>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* === TOMBOL SAVE === */}
+      <div className="flex gap-3">
         <Button type="submit" disabled={isPending} className="flex-1">
-          {isPending ? 'Menyimpan...' : 'Update Produk'}
+          {isPending ? 'Menyimpan...' : 'Simpan Perubahan'}
         </Button>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => router.back()}
-          disabled={isPending}
-        >
+        <Button type="button" variant="outline" onClick={() => router.back()}>
           Batal
         </Button>
       </div>

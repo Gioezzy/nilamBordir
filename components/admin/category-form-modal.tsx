@@ -147,7 +147,7 @@ export default function CategoryFormModal({
           mode === 'create'
             ? 'Kategori berhasil ditambahkan!'
             : 'Kategori berhasil diupdate!',
-            {id: 'category-save'}
+          { id: 'category-save' }
         );
 
         setIsOpen(false);
@@ -178,82 +178,91 @@ export default function CategoryFormModal({
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
-      <AlertDialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <AlertDialogHeader>
-          <AlertDialogTitle>
+      <AlertDialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto rounded-xl shadow-2xl border border-gray-200">
+        <AlertDialogHeader className="space-y-1 pb-2 border-b">
+          <AlertDialogTitle className="text-2xl font-semibold">
             {mode === 'create' ? 'Tambah Kategori Baru' : 'Edit Kategori'}
           </AlertDialogTitle>
+          <p className="text-sm text-gray-500">
+            Lengkapi formulir berikut untuk mengatur kategori produk
+          </p>
         </AlertDialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6 mt-4">
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="name">Nama Kategori *</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={e => handleNameChange(e.target.value)}
-                placeholder="Contoh: Salempang Bordir"
-                required
-                disabled={isPending}
-              />
+        <form onSubmit={handleSubmit} className="space-y-8 pt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="name">Nama Kategori *</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={e => handleNameChange(e.target.value)}
+                  placeholder="Contoh: Salempang Bordir"
+                  required
+                  disabled={isPending}
+                  className="focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="slug">Slug *</Label>
+                <Input
+                  id="slug"
+                  value={formData.slug}
+                  onChange={e =>
+                    setFormData({ ...formData, slug: e.target.value })
+                  }
+                  placeholder="salempang-bordir"
+                  required
+                  disabled={isPending}
+                />
+                <p className="text-xs text-gray-500">
+                  URL-friendly identifier (auto-generated dari nama)
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="display_order">Urutan Tampilan</Label>
+                <Input
+                  id="display_order"
+                  type="number"
+                  value={formData.display_order}
+                  onChange={e =>
+                    setFormData({
+                      ...formData,
+                      display_order: Number(e.target.value),
+                    })
+                  }
+                  min="0"
+                  disabled={isPending}
+                />
+                <p className="text-xs text-gray-500">
+                  Angka lebih kecil akan ditampilkan lebih dulu
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3 pt-1">
+                <input
+                  type="checkbox"
+                  id="is_active"
+                  checked={formData.is_active}
+                  onChange={e =>
+                    setFormData({ ...formData, is_active: e.target.checked })
+                  }
+                  className="w-4 h-4 accent-blue-600"
+                  disabled={isPending}
+                />
+                <Label htmlFor="is_active" className="cursor-pointer text-sm">
+                  Aktifkan kategori (tampilkan di website)
+                </Label>
+              </div>
             </div>
 
-            <div>
-              <Label htmlFor="slug">Slug *</Label>
-              <Input
-                id="slug"
-                value={formData.slug}
-                onChange={e =>
-                  setFormData({ ...formData, slug: e.target.value })
-                }
-                placeholder="salempang-bordir"
-                required
-                disabled={isPending}
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                URL-friendly identifier (auto-generated dari nama)
-              </p>
-            </div>
-
-            <div>
-              <Label htmlFor="description">Deskripsi</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={e =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                placeholder="Deskripsi kategori..."
-                rows={3}
-                disabled={isPending}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="display_order">Urutan Tampilan</Label>
-              <Input
-                id="display_order"
-                type="number"
-                value={formData.display_order}
-                onChange={e =>
-                  setFormData({
-                    ...formData,
-                    display_order: Number(e.target.value),
-                  })
-                }
-                min="0"
-                disabled={isPending}
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Angka lebih kecil akan ditampilkan lebih dulu
-              </p>
-            </div>
-
+            {/* IMAGE SECTION */}
             <div>
               <Label>Gambar Kategori</Label>
               {imagePreview ? (
-                <div className="mt-2 relative w-full h-48 border-2 border-gray-200 rounded-lg overflow-hidden">
+                <div className="mt-2 relative w-full h-56 border rounded-lg overflow-hidden shadow-md">
                   <Image
                     src={imagePreview}
                     alt="Preview"
@@ -266,13 +275,13 @@ export default function CategoryFormModal({
                       setImageFile(null);
                       setImagePreview(category?.image_url || null);
                     }}
-                    className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600"
+                    className="absolute top-2 right-2 p-2 bg-red-600 text-white rounded-full hover:bg-red-700 shadow"
                   >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
               ) : (
-                <label className="mt-2 flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 transition-colors">
+                <label className="mt-2 flex flex-col items-center justify-center w-full h-56 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition">
                   <Upload className="w-10 h-10 text-gray-400 mb-2" />
                   <span className="text-sm font-medium text-gray-700">
                     Klik untuk upload gambar
@@ -290,32 +299,23 @@ export default function CategoryFormModal({
                 </label>
               )}
             </div>
-
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                id="is_active"
-                checked={formData.is_active}
-                onChange={e =>
-                  setFormData({ ...formData, is_active: e.target.checked })
-                }
-                className="w-4 h-4"
-                disabled={isPending}
-              />
-              <Label htmlFor="is_active" className="cursor-pointer">
-                Aktifkan kategori (tampilkan di website)
-              </Label>
-            </div>
           </div>
 
-          <div className="flex gap-3 pt-4 border-t">
-            <Button type="submit" disabled={isPending} className="flex-1">
-              {isPending
-                ? 'Menyimpan...'
-                : mode === 'create'
-                ? 'Tambah Kategori'
-                : 'Update Kategori'}
-            </Button>
+          <div className="space-y-2">
+            <Label htmlFor="description">Deskripsi</Label>
+            <Textarea
+              id="description"
+              value={formData.description}
+              onChange={e =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+              placeholder="Deskripsi kategori..."
+              rows={4}
+              disabled={isPending}
+            />
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4 border-t">
             <Button
               type="button"
               variant="outline"
@@ -323,6 +323,17 @@ export default function CategoryFormModal({
               disabled={isPending}
             >
               Batal
+            </Button>
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="min-w-[140px]"
+            >
+              {isPending
+                ? 'Menyimpan...'
+                : mode === 'create'
+                ? 'Tambah Kategori'
+                : 'Update Kategori'}
             </Button>
           </div>
         </form>
