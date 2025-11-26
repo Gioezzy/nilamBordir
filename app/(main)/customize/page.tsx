@@ -3,7 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { getProductBySlug } from '@/lib/actions/product';
-import { Product } from '@/lib/types';
+import { ProductWithCategory } from '@/lib/types';
 import ProductOrderForm from '@/components/product/product-order-form';
 import Breadcrumb from '@/components/layout/breadcrumb';
 import { Loader2 } from 'lucide-react';
@@ -12,7 +12,7 @@ export default function CustomizePage() {
   const searchParams = useSearchParams();
   const slug = searchParams.get('slug');
 
-  const [product, setProduct] = useState<Product | null>(null);
+  const [product, setProduct] = useState<ProductWithCategory | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -67,7 +67,7 @@ export default function CustomizePage() {
           items={[
             {
               label: product.category?.name || 'Produk',
-              href: `/category/${product.category?.slug}`,
+              href: `/category/${product.category?.slug || ''}`,
             },
             { label: product.name, href: `/product/${product.slug}` },
             { label: 'Kustomisasi' },
