@@ -7,18 +7,8 @@ import {
   useState,
   ReactNode,
 } from 'react';
-import { OrderCostomization } from '@/lib/types';
+import { CartItem, OrderCustomization } from '@/lib/types';
 import isEqual from 'lodash.isequal';
-
-export interface CartItem {
-  id: string;
-  productId: string;
-  name: string;
-  price: number;
-  quantity: number;
-  image?: string;
-  customization?: OrderCostomization;
-}
 
 interface CartContentType {
   items: CartItem[];
