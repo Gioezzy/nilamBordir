@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Product } from '@/lib/types';
-import { OrderCostomization } from '@/lib/types';
+import { ProductWithCategory, OrderCustomization } from '@/lib/types';
 import OrderFormBuilder from './order-form-builder';
 import { useCart } from '@/context/cart-context';
 import { toast } from 'sonner';
@@ -14,13 +13,13 @@ import { getProductImage } from '@/lib/utils';
 import { Separator } from '../ui/separator';
 
 interface ProductOrderFormProps {
-  product: Product;
+  product: ProductWithCategory;
 }
 
 export default function ProductOrderForm({ product }: ProductOrderFormProps) {
   const [quantity, setQuantity] = useState(1);
   const [customization, setCustomization] = useState<
-    OrderCostomization | undefined
+    OrderCustomization | undefined
   >(undefined);
   const { addItem } = useCart();
 
@@ -32,7 +31,7 @@ export default function ProductOrderForm({ product }: ProductOrderFormProps) {
 
     addItem({
       productId: product.id,
-      name: product.name,
+      productName: product.name,
       price: customization.totalPrice, // Use the final price from the builder
       quantity,
       image: getProductImage(product.sample_images),
@@ -85,11 +84,16 @@ export default function ProductOrderForm({ product }: ProductOrderFormProps) {
     </div>
   );
 
+  if (!product.category) {
+    return <p>Kategori produk tidak ditemukan.</p>;
+  }
+
   return (
     <OrderFormBuilder
       productBasePrice={product.price}
       onCustomizationChange={setCustomization}
       actions={ActionButtons}
+      categorySlug={product.category.slug}
     />
   );
 }
