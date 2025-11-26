@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, ReactNode } from 'react';
 import { Button } from '../ui/button';
-import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
 import {
@@ -54,7 +53,7 @@ export default function DesignUploadForm({
       'application/pdf',
     ];
     if (!allowedTypes.includes(file.type)) {
-      toast.error('Format file tidak didukung, Gunakan JPG, PNG, atau PDF');
+      toast.error('Format file tidak didukung. Gunakan JPG, PNG, atau PDF');
       return;
     }
 
@@ -119,7 +118,9 @@ export default function DesignUploadForm({
           throw new Error('Gagal menyimpan design');
         }
 
-        toast.success('Design berhasil diupload! Menuggu review admin');
+        toast.success('Design berhasil diupload! Menunggu review admin', {
+          duration: 5000,
+        });
         router.refresh();
 
         setCategoryId('');
@@ -133,9 +134,31 @@ export default function DesignUploadForm({
     });
   };
 
+  const UploadGuidelines: ReactNode = (
+    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 space-y-2">
+      <h4 className="text-sm font-semibold text-yellow-800">
+        ℹ️ Panduan Upload
+      </h4>
+      <ul className="text-sm text-yellow-800 space-y-1">
+        <li className="flex items-start gap-2">
+          <span className="text-yellow-600">✓</span>
+          <span>Format: JPG, PNG, PDF (Max 5MB)</span>
+        </li>
+        <li className="flex items-start gap-2">
+          <span className="text-yellow-600">✓</span>
+          <span>Isi spesifikasi lengkap</span>
+        </li>
+        <li className="flex items-start gap-2">
+          <span className="text-yellow-600">✓</span>
+          <span>Review 1-2 hari kerja</span>
+        </li>
+      </ul>
+    </div>
+  );
+
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      <div>
+      <div className='space-y-2'>
         <Label htmlFor="category">Kategori Produk *</Label>
         <Select
           value={categoryId}
@@ -155,7 +178,7 @@ export default function DesignUploadForm({
         </Select>
       </div>
 
-      <div>
+      <div className='space-y-2'>
         <Label>Upload Design File *</Label>
         {designFile ? (
           <div className="mt-2 flex items-center justify-between p-4 bg-gray-50 border rounded-lg">
@@ -172,6 +195,7 @@ export default function DesignUploadForm({
               type="button"
               onClick={() => setDesignFile(null)}
               className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+              disabled={isPending}
             >
               <X className="w-5 h-5 text-gray-600" />
             </button>
@@ -185,7 +209,7 @@ export default function DesignUploadForm({
             <span className="text-xs text-gray-500 mt-1">
               JPG, PNG, PDF (Max 5MB)
             </span>
-            <Input
+            <input
               type="file"
               accept="image/jpeg,image/png,image/webp,application/pdf"
               onChange={handleFileChange}
@@ -209,11 +233,12 @@ export default function DesignUploadForm({
           <OrderFormBuilder
             productBasePrice={0}
             onCustomizationChange={setCustomization}
+            headerContent={UploadGuidelines}
           />
         </div>
       )}
 
-      <div>
+      <div className='space-y-2'>
         <Label htmlFor="notes">Catatan Tambahan</Label>
         <Textarea
           id="notes"
@@ -228,7 +253,7 @@ export default function DesignUploadForm({
       <div className="flex gap-3 pt-4 border-t">
         <Button
           type="submit"
-          disabled={isPending || !categoryId || !designFile}
+          disabled={isPending || !categoryId || !designFile || !customization}
           className="flex-1"
           size="lg"
         >
@@ -236,12 +261,28 @@ export default function DesignUploadForm({
         </Button>
       </div>
 
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-        <p className="text-sm text-yellow-800">
-          <strong>Catatan:</strong> Design Anda akan direview oleh admin dalam
-          1-2 hari kerja. Anda akan mendapat notifikasi via email setelah design
-          disetujui atau jika ada revisi yang diperlukan.
-        </p>
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <h4 className="text-sm font-semibold text-blue-900 mb-2">
+          📋 Checklist Sebelum Upload:
+        </h4>
+        <ul className="text-sm text-blue-800 space-y-1">
+          <li className="flex items-start gap-2">
+            <span className="text-blue-600">✓</span>
+            <span>File design sudah dipilih (JPG, PNG, atau PDF)</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="text-blue-600">✓</span>
+            <span>Kategori produk sudah dipilih</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="text-blue-600">✓</span>
+            <span>Spesifikasi bordir sudah diatur (titik, warna, layout)</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="text-blue-600">✓</span>
+            <span>Preview salempang sudah sesuai keinginan</span>
+          </li>
+        </ul>
       </div>
     </form>
   );
