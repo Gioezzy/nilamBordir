@@ -8,6 +8,8 @@ import {
   User,
   LogOut,
   LayoutDashboard,
+  Upload,
+  ShoppingBag,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
@@ -17,11 +19,19 @@ import { usePathname } from 'next/navigation';
 import { logoutAction } from '@/lib/actions/auth';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
-const CATEGORIES = [
+const PUBLIC_CATEGORIES = [
   { name: 'Salempang Bordir', slug: 'salempang-bordir' },
   { name: 'Bordir Nama', slug: 'bordir-nama' },
   { name: 'Bordir Logo', slug: 'bordir-logo' },
+];
+
+const PROTECTED_MENU_ITEMS = [
+  { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { title: 'Pesanan Saya', href: '/orders', icon: ShoppingBag },
+  { title: 'Upload Desain', href: '/upload-design', icon: Upload },
+  { title: 'Profil', href: '/profile', icon: User },
 ];
 
 export default function Navbar() {
@@ -45,8 +55,7 @@ export default function Navbar() {
       return;
     }
     toast.success('Anda berhasil logout');
-    router.push('/login')
-    // await logoutAction();
+    router.push('/login');
     router.refresh();
     setIsUserMenuOpen(false);
   };
@@ -83,6 +92,12 @@ export default function Navbar() {
     setIsShopOpen(false);
   }, [pathname]);
 
+  const isProtectedRoute =
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/orders') ||
+    pathname.startsWith('/profile') ||
+    pathname.startsWith('/upload-design');
+
   return (
     <nav
       className={`sticky top-0 z-50 transition-shadow duration-300 ${
@@ -115,7 +130,7 @@ export default function Navbar() {
 
               {isShopOpen && (
                 <div className="absolute top-full left-0 mt-3 w-56 bg-white border rounded-lg shadow-lg py-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                  {CATEGORIES.map(category => (
+                  {PUBLIC_CATEGORIES.map(category => (
                     <Link
                       key={category.slug}
                       href={`/category/${category.slug}`}
@@ -237,76 +252,94 @@ export default function Navbar() {
       {isMobileMenuOpen && (
         <div className="md:hidden border-t bg-white/95 backdrop-blur-md animate-in slide-in-from-top duration-300">
           <div className="flex flex-col px-4 py-4 space-y-1">
-            <div className="pb-2 mb-2 border-b">
-              <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-4">
-                Kategori
-              </div>
-              {CATEGORIES.map(category => (
-                <Link
-                  key={category.slug}
-                  href={`/category/${category.slug}`}
-                  className="block px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg transition-colors"
-                >
-                  {category.name}
-                </Link>
-              ))}
-              <Link
-                href="/shop"
-                className="block px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg transition-colors font-medium"
-              >
-                Semua Produk
-              </Link>
-            </div>
-
-            <Link
-              href="/upload-design"
-              className="px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg font-medium transition-colors"
-            >
-              Upload Design
-            </Link>
-
-            <Link
-              href="/about"
-              className="px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg font-medium transition-colors"
-            >
-              About
-            </Link>
-
-            <div className="border-t my-2"></div>
-
-            {!loading && (
+            {isProtectedRoute ? (
               <>
-                {user ? (
-                  <>
+                {PROTECTED_MENU_ITEMS.map(item => {
+                  const Icon = item.icon;
+                  const isActive = pathname === item.href;
+                  return (
                     <Link
-                      href="/dashboard"
-                      className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg font-medium transition-colors"
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        'flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors font-medium',
+                        isActive
+                          ? 'bg-gray-900 text-white'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      )}
                     >
-                      <LayoutDashboard className="w-5 h-5" />
-                      <span>Dashboard</span>
+                      <Icon className="w-5 h-5" />
+                      <span>{item.title}</span>
                     </Link>
+                  );
+                })}
+                <div className="border-t my-2"></div>
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center space-x-3 px-4 py-3 text-red-600 hover:bg-red-50 hover:text-red-700 rounded-lg font-medium transition-colors text-left"
+                >
+                  <LogOut className="w-5 h-5" />
+                  <span>Logout</span>
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="pb-2 mb-2 border-b">
+                  <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-4">
+                    Kategori
+                  </div>
+                  {PUBLIC_CATEGORIES.map(category => (
                     <Link
-                      href="/profile"
-                      className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg font-medium transition-colors"
+                      key={category.slug}
+                      href={`/category/${category.slug}`}
+                      className="block px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg transition-colors"
                     >
-                      <User className="w-5 h-5" />
-                      <span>Profile</span>
+                      {category.name}
                     </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full flex items-center space-x-3 px-4 py-3 text-red-600 hover:bg-red-50 hover:text-red-700 rounded-lg font-medium transition-colors text-left"
-                    >
-                      <LogOut className="w-5 h-5" />
-                      <span>Logout</span>
-                    </button>
-                  </>
-                ) : (
+                  ))}
                   <Link
-                    href="/login"
-                    className="px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg font-medium transition-colors"
+                    href="/shop"
+                    className="block px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg transition-colors font-medium"
                   >
-                    Login
+                    Semua Produk
                   </Link>
+                </div>
+
+                <Link
+                  href="/upload-design"
+                  className="px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg font-medium transition-colors"
+                >
+                  Upload Design
+                </Link>
+
+                <Link
+                  href="/about"
+                  className="px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg font-medium transition-colors"
+                >
+                  About
+                </Link>
+
+                <div className="border-t my-2"></div>
+
+                {!loading && (
+                  <>
+                    {user ? (
+                      <Link
+                        href="/dashboard"
+                        className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg font-medium transition-colors"
+                      >
+                        <LayoutDashboard className="w-5 h-5" />
+                        <span>My Account</span>
+                      </Link>
+                    ) : (
+                      <Link
+                        href="/login"
+                        className="px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg font-medium transition-colors"
+                      >
+                        Login
+                      </Link>
+                    )}
+                  </>
                 )}
               </>
             )}

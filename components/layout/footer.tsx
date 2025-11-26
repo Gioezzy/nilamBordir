@@ -132,16 +132,16 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  0831-8254-9121 (WhatsApp)
+                  62812345678 (WhatsApp)
                 </a>
               </li>
               <li className="flex items-start space-x-3">
                 <Mail className="w-5 h-5 mt-0.5 flex-shrink-0" />
                 <a
-                  href="mailto:giovanniyuda29@gmail.com"
+                  href="mailto:nilambordir@gmail.com"
                   className="hover:text-gray-900 transition-colors"
                 >
-                  giovanniyuda29@gmail.com
+                  nilambordir@gmail.com
                 </a>
               </li>
               <li className="flex items-start space-x-3">
