@@ -1,99 +1,65 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
-import { useState, useEffect } from 'react';
+import { ContentItem } from '@/lib/types';
+import { BORDIR_CONFIG } from '@/lib/constans';
 import Image from 'next/image';
-import { ChevronLeft, ChevronRight, GripVertical } from 'lucide-react';
-
-interface SalempangContent {
-  id: string;
-  type: 'text' | 'logo';
-  value: string;
-  position: 'left' | 'right';
-}
 
 interface SalempangPreviewProps {
   titik: string;
-  textLines: string[];
-  logoUrl?: string;
   threadColor: string;
-  contents: SalempangContent[];
-  onContentsChange: (contents: SalempangContent[]) => void;
+  salempangColor: string;
+  contentGap: string;
+  contents: ContentItem[];
+  onContentsChange: (contents: ContentItem[]) => void;
 }
 
 export default function SalempangPreview({
   titik,
-  textLines,
-  logoUrl,
   threadColor,
+  salempangColor,
+  contentGap,
   contents,
-  onContentsChange,
 }: SalempangPreviewProps) {
-  const [leftContents, setLeftContents] = useState<SalempangContent[]>([]);
-  const [rightContents, setRightContents] = useState<SalempangContent[]>([]);
-
   const maxTitik = parseInt(titik) || 2;
 
-  useEffect(() => {
-    setLeftContents(contents.filter(c => c.position === 'left'));
-    setRightContents(contents.filter(c => c.position === 'right'));
-  }, [contents]);
+  const gapValue =
+    BORDIR_CONFIG.CONTENT_GAP_OPTIONS.find(g => g.value === contentGap)
+      ?.spacing || 20;
 
-  const moveContent = (id: string, newPosition: 'left' | 'right') => {
-    const updatedContents = contents.map(c =>
-      c.id === id ? { ...c, position: newPosition } : c
-    );
-    onContentsChange(updatedContents);
-  };
+  const salempangHex =
+    BORDIR_CONFIG.SALEMPANG_COLORS.find(c => c.value === salempangColor)?.hex ||
+    '#000000';
 
-  const renderContent = (content: SalempangContent, side: 'left' | 'right') => {
-    const colorMap: { [key: string]: string } = {
-      hitam: '#000000',
-      putih: '#FFFFFF',
-      merah: '#DC2626',
-      biru: '#2563EB',
-      hijau: '#16A34A',
-      kuning: '#EAB308',
-      orange: '#EA580C',
-      ungu: '#9333EA',
-      emas: '#F59E0B',
-      silver: '#94A3B8',
-    };
+  const threadHex =
+    BORDIR_CONFIG.THREAD_COLORS.find(c => c.value === threadColor)?.hex ||
+    '#000000';
 
-    const textColor = colorMap[threadColor] || '#000000';
+  const leftContents = contents.filter(c => c.position === 'left');
+  const rightContents = contents.filter(c => c.position === 'right');
 
-    if (content.type === 'text') {
+  const renderContent = (content: ContentItem, side: 'left' | 'right') => {
+    const isVertical = content.layout === 'vertical';
+
+    if (content.type === 'text' && content.value) {
       return (
         <div
           key={content.id}
-          className="py-4 px-6 text-center relative group"
-          style={{ color: textColor }}
+          className="flex items-center justify-center px-4 py-2"
+          style={{
+            color: threadHex,
+            marginBottom: `${gapValue}px`,
+          }}
         >
-          <p className="font-serif text-lg font-semibold break-words">
-            {content.value || 'Text Kosong'}
+          <p
+            className="font-serif text-sm font-semibold whitespace-nowrap"
+            style={{
+              writingMode: isVertical ? 'vertical-rl' : 'horizontal-tb',
+              textOrientation: isVertical ? 'upright' : 'mixed',
+            }}
+          >
+            {content.value}
           </p>
-
-          <div className="absolute top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-            {side === 'left' && (
-              <button
-                type="button"
-                onClick={() => moveContent(content.id, 'right')}
-                className="absolute -right-8 p-1 bg-blue-500 text-white rounded-full hover:bg-blue-600 text-xs"
-                title="Pindah ke Kanan"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            )}
-            {side === 'right' && (
-              <button
-                type="button"
-                onClick={() => moveContent(content.id, 'left')}
-                className="absolute -left-8 p-1 bg-blue-500 text-white rounded-full hover:bg-blue-600 text-xs"
-                title="Pindah ke Kiri"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-            )}
-          </div>
         </div>
       );
     }
@@ -102,38 +68,24 @@ export default function SalempangPreview({
       return (
         <div
           key={content.id}
-          className="py-4 flex justify-center items-center relative group"
+          className="flex items-center justify-center py-2"
+          style={{
+            marginBottom: `${gapValue}px`,
+          }}
         >
-          <div className="w-16 h-16 relative">
+          <div
+            className="w-14 h-14 relative"
+            style={{
+              transform: isVertical ? 'rotate(90deg)' : 'none',
+              transformOrigin: 'center',
+            }}
+          >
             <Image
               src={content.value}
               alt="Logo"
               fill
               className="object-contain"
             />
-          </div>
-
-          <div className="absolute top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-            {side === 'left' && (
-              <button
-                type="button"
-                onClick={() => moveContent(content.id, 'right')}
-                className="absolute -right-8 p-1 bg-blue-500 text-white rounded-full hover:bg-blue-600 text-xs"
-                title="Pindah ke Kanan"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            )}
-            {side === 'right' && (
-              <button
-                type="button"
-                onClick={() => moveContent(content.id, 'left')}
-                className="absolute -left-8 p-1 bg-blue-500 text-white rounded-full hover:bg-blue-600 text-xs"
-                title="Pindah ke Kiri"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-            )}
           </div>
         </div>
       );
@@ -142,69 +94,141 @@ export default function SalempangPreview({
     return null;
   };
 
+  const getTextColorClass = () => {
+    if (salempangColor === 'white' || salempangColor === 'yellow') {
+      return 'text-gray-800';
+    }
+    return 'text-gray-400';
+  };
+
   return (
     <div className="space-y-4">
-      {/* Info */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <p className="text-sm text-blue-900 font-medium">
           📌 Preview Salempang ({maxTitik} Titik)
         </p>
-        <p className="text-xs text-blue-700 mt-1">
-          Klik tombol panah untuk memindahkan posisi konten (kiri/kanan)
-        </p>
+        <div className="text-xs text-blue-700 mt-2 space-y-1">
+          <p>
+            <strong>Warna Salempang:</strong>{' '}
+            {
+              BORDIR_CONFIG.SALEMPANG_COLORS.find(
+                c => c.value === salempangColor
+              )?.label
+            }
+          </p>
+          <p>
+            <strong>Warna Benang:</strong>{' '}
+            {
+              BORDIR_CONFIG.THREAD_COLORS.find(c => c.value === threadColor)
+                ?.label
+            }
+          </p>
+          <p>
+            <strong>Jarak Konten:</strong> {gapValue}px (
+            {
+              BORDIR_CONFIG.CONTENT_GAP_OPTIONS.find(
+                g => g.value === contentGap
+              )?.label
+            }
+            )
+          </p>
+        </div>
       </div>
 
-      <div className="relative bg-gradient-to-b from-gray-100 to-gray-200 rounded-lg p-8 overflow-hidden">
+      <div className="relative bg-gradient-to-b from-gray-100 to-gray-200 rounded-lg p-8 overflow-hidden shadow-inner">
         <div className="relative mx-auto" style={{ maxWidth: '400px' }}>
-          <div className="absolute left-0 top-0 bottom-0 w-[45%] bg-black rounded-l-lg flex flex-col justify-center">
-            {leftContents.map(content => renderContent(content, 'left'))}
-            
-            {leftContents.length === 0 && (
-              <div className="text-center text-gray-500 py-8 text-sm italic">
+          <div
+            className="absolute left-0 top-0 bottom-0 w-[45%] rounded-l-lg flex flex-col justify-center items-center shadow-md"
+            style={{
+              backgroundColor: salempangHex,
+              border: salempangColor === 'white' ? '1px solid #e5e7eb' : 'none',
+            }}
+          >
+            {leftContents.length > 0 ? (
+              <div className="w-full py-4">
+                {leftContents.map(content => renderContent(content, 'left'))}
+              </div>
+            ) : (
+              <div
+                className={`text-center py-8 text-xs italic ${getTextColorClass()}`}
+              >
                 Konten Kiri
               </div>
             )}
           </div>
 
-          <div className="absolute left-[45%] right-[45%] top-0 bottom-0">
+          <div className="absolute left-[45%] right-[45%] top-0 bottom-0 z-10">
             <svg
               viewBox="0 0 100 600"
-              className="w-full h-full"
+              className="w-full h-full drop-shadow-md"
               preserveAspectRatio="none"
             >
               <polygon
                 points="0,0 100,0 50,150 0,0"
                 fill="#A0826D"
+                stroke="#8B7355"
+                strokeWidth="2"
               />
               <polygon
                 points="0,600 100,600 50,450 0,600"
                 fill="#A0826D"
+                stroke="#8B7355"
+                strokeWidth="2"
               />
             </svg>
           </div>
 
-          <div className="absolute right-0 top-0 bottom-0 w-[45%] bg-black rounded-r-lg flex flex-col justify-center">
-            {rightContents.map(content => renderContent(content, 'right'))}
-            
-            {rightContents.length === 0 && (
-              <div className="text-center text-gray-500 py-8 text-sm italic">
+          <div
+            className="absolute right-0 top-0 bottom-0 w-[45%] rounded-r-lg flex flex-col justify-center items-center shadow-md"
+            style={{
+              backgroundColor: salempangHex,
+              border: salempangColor === 'white' ? '1px solid #e5e7eb' : 'none',
+            }}
+          >
+            {rightContents.length > 0 ? (
+              <div className="w-full py-4">
+                {rightContents.map(content => renderContent(content, 'right'))}
+              </div>
+            ) : (
+              <div
+                className={`text-center py-8 text-xs italic ${getTextColorClass()}`}
+              >
                 Konten Kanan
               </div>
             )}
           </div>
 
-          <div className="relative" style={{ paddingBottom: '150%' }}>
-            {/* Spacer for aspect ratio */}
-          </div>
+          <div className="relative" style={{ paddingBottom: '150%' }} />
         </div>
 
-        {/* Counter */}
-        <div className="mt-4 text-center">
-          <p className="text-sm text-gray-600">
-            Konten: <span className="font-bold">{contents.length}</span> / {maxTitik}
+        <div className="mt-6 text-center space-y-2">
+          <p className="text-sm text-gray-700">
+            Konten: <span className="font-bold">{contents.length}</span> /{' '}
+            {maxTitik}
           </p>
+          <div className="flex items-center justify-center gap-4 text-xs text-gray-600">
+            <span>
+              ← Kiri: <strong>{leftContents.length}</strong>
+            </span>
+            <span>|</span>
+            <span>
+              Kanan →: <strong>{rightContents.length}</strong>
+            </span>
+          </div>
         </div>
       </div>
+
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+        <p className="text-xs font-semibold text-gray-700 mb-2">
+          📖 Keterangan:
+        </p>
+        <ul className="text-xs text-gray-600 space-y-1">
+          <li>• Setiap konten bisa diatur layout (vertikal/horizontal)</li>
+          <li>• Setiap konten bisa diatur posisi (kiri/kanan)</li>
+          <li>• Gap spacing mengatur jarak antar konten</li>
+          <li>• Logo akan otomatis dirotasi jika layout-nya vertikal</li>
+        </ul>
+      </div>
     </div>
-  )
+  );
 }

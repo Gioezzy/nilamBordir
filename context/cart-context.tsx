@@ -7,6 +7,8 @@ import {
   useState,
   ReactNode,
 } from 'react';
+import { OrderCostomization } from '@/lib/types';
+import isEqual from 'lodash.isequal';
 
 export interface CartItem {
   id: string;
@@ -15,7 +17,7 @@ export interface CartItem {
   price: number;
   quantity: number;
   image?: string;
-  customNotes?: string;
+  customization?: OrderCostomization;
 }
 
 interface CartContentType {
@@ -58,16 +60,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addItem = (item: Omit<CartItem, 'id'>) => {
     setItems(prev => {
+      // Check if an item with the same product ID and identical customization already exists
       const existingItemIndex = prev.findIndex(
-        i => i.productId === item.productId
+        i =>
+          i.productId === item.productId &&
+          isEqual(i.customization, item.customization)
       );
 
       if (existingItemIndex > -1) {
+        // If it exists, update the quantity
         const updated = [...prev];
         updated[existingItemIndex].quantity += item.quantity;
         return updated;
       }
 
+      // Otherwise, add it as a new item
       return [...prev, { ...item, id: Date.now().toString() }];
     });
   };
