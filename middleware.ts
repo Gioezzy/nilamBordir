@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { updateSession } from './lib/supabase/middleware';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -25,18 +24,10 @@ export async function middleware(request: NextRequest) {
 
   const isProtectedRoute =
     pathname.startsWith('/dashboard') ||
-    pathname.startsWith('/orders') || 
+    pathname.startsWith('/orders') ||
     pathname.startsWith('/profile') ||
-    pathname.startsWith('/upload-design');
-
-  const isPublicRoute =
-    pathname === '/' ||
-    pathname.startsWith('/shop') ||
-    pathname.startsWith('/product/') ||
-    pathname.startsWith('/category/') ||
-    pathname.startsWith('/cart') ||
-    pathname.startsWith('/about') ||
-    pathname.startsWith('/checkout'); 
+    pathname.startsWith('/upload-design') ||
+    pathname.startsWith('/checkout');
 
   // ======================================
   // 1. Handle Unauthenticated Users
@@ -45,12 +36,6 @@ export async function middleware(request: NextRequest) {
     if (isAdminRoute || isProtectedRoute) {
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('redirect', pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-    
-    if (pathname.startsWith('/checkout')) {
-      const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('redirect', '/checkout');
       return NextResponse.redirect(loginUrl);
     }
 

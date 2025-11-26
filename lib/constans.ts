@@ -67,18 +67,37 @@ export const UPLOAD_CONSTRAINTS = {
 export const BORDIR_CONFIG = {
   TITIK_OPTIONS: [
     {value: '2', label: '2 Titik', price: 60000},
-    {value: '3', label: '3 Titik Vertikal', price: 70000},
-    {value: '4_datar', label: '4 Titik Datar', price: 70000},
+    {value: '3', label: '3 Titik', price: 70000},
     {value: '4', label: '4 Titik', price: 75000},
-    {value: '4_vertikal', label: '4 Titik Vertikal', price: 75000},
-    {value: '4_garis', label: '4 Titik Garis', price: 75000},
-    {value: '5_garus', label: '5 Titik Garis', price: 80000}
+    {value: '5', label: '5 Titik', price: 80000}
   ],
 
-  LAYOUT_TYPES: [
-    { value: 'vertikal', label: 'Vertikal', icon: '|' },
-    { value: 'horizontal', label: 'Horizontal (Datar)', icon: '—' },
-    { value: 'garis', label: 'Garis', icon: '/' },
+  CONTENT_LAYOUT_OPTIONS: [
+    { value: 'vertical', label: 'Vertikal', icon: '↕️' },
+    { value: 'horizontal', label: 'Horizontal', icon: '↔️' },
+  ],
+
+  CONTENT_POSITION_OPTIONS: [
+    { value: 'left', label: 'Kiri', icon: '←' },
+    { value: 'right', label: 'Kanan', icon: '→' },
+  ],
+
+  CONTENT_GAP_OPTIONS: [
+    { value: 'compact', label: 'Rapat', spacing: 10 },
+    { value: 'normal', label: 'Normal', spacing: 20 },
+    { value: 'relaxed', label: 'Longgar', spacing: 30 },
+    { value: 'spacious', label: 'Sangat Longgar', spacing: 40 },
+  ],
+
+  SALEMPANG_COLORS: [
+    { value: 'black', label: 'Hitam', hex: '#000000' },
+    { value: 'red', label: 'Merah', hex: '#DC2626' },
+    { value: 'blue', label: 'Biru', hex: '#2563EB' },
+    { value: 'green', label: 'Hijau', hex: '#16A34A' },
+    { value: 'white', label: 'Putih', hex: '#FFFFFF' },
+    { value: 'yellow', label: 'Kuning', hex: '#EAB308' },
+    { value: 'purple', label: 'Ungu', hex: '#9333EA' },
+    { value: 'orange', label: 'Orange', hex: '#EA580C' },
   ],
 
   FONT_STYLES: [

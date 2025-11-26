@@ -50,19 +50,27 @@ export interface DesignWithUser extends Design {
   category: Category | null;
 }
 
+export interface ContentItem {
+  id: string;
+  type: 'text' | 'logo';
+  value: string;
+  layout: 'vertical' | 'horizontal';
+  position: 'left' | 'right';
+}
+
 export interface OrderCostomization {
-  titik: string
-  layout: string
-  font: string
-  threadColor: string
-  textLines: string[]
-  hasLogo: boolean
-  logoPosition?:string
-  logoSize?:string
-  logoFileUrl?:string
-  designRefernceUrls?:string[]
-  additionalNotes?: string
-  basePriceFromTitik: number
-  logoPrice: number
-  totalPrice: number
+  titik: string;
+  font: string;
+  threadColor: string;
+  salempangColor: string; 
+  contentGap: string; 
+  contents: ContentItem[]; 
+  hasLogo: boolean;
+  logoSize?: string;
+  logoFileUrl?: string;
+  designReferenceUrls?: string[];
+  additionalNotes?: string;
+  basePriceFromTitik: number;
+  logoPrice: number;
+  totalPrice: number;
 }
