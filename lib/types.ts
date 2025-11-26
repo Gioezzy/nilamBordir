@@ -32,13 +32,13 @@ export interface OrderWithDetails extends Order {
 }
 
 export interface CartItem {
-  id: string
-  productId: string
-  productName: string
-  quantity: number
-  price: number
-  image?:string
-  customization?: OrderCostomization
+  id: string;
+  productId: string;
+  productName: string;
+  quantity: number;
+  price: number;
+  image?: string;
+  customization?: OrderCustomization;
 }
 
 export interface ProductWithCategory extends Product {
@@ -58,13 +58,15 @@ export interface ContentItem {
   position: 'left' | 'right';
 }
 
-export interface OrderCostomization {
+// Specific customization types for each category
+export interface SalempangCustomization {
+  categorySlug: 'salempang';
   titik: string;
   font: string;
   threadColor: string;
-  salempangColor: string; 
-  contentGap: string; 
-  contents: ContentItem[]; 
+  salempangColor: string;
+  contentGap: string;
+  contents: ContentItem[];
   hasLogo: boolean;
   logoSize?: string;
   logoFileUrl?: string;
@@ -74,3 +76,27 @@ export interface OrderCostomization {
   logoPrice: number;
   totalPrice: number;
 }
+
+export interface BordirNamaCustomization {
+  categorySlug: 'bordir-nama';
+  name: string;
+  textColor: string;
+  backgroundColor: string;
+  additionalNotes?: string;
+  totalPrice: number;
+}
+
+export interface BordirLogoCustomization {
+  categorySlug: 'bordir-logo';
+  logoFile?: File;
+  logoFileUrl?: string;
+  backgroundColor: string;
+  additionalNotes?: string;
+  totalPrice: number;
+}
+
+// Discriminated union for order customization
+export type OrderCustomization =
+  | SalempangCustomization
+  | BordirNamaCustomization
+  | BordirLogoCustomization;
