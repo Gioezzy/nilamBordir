@@ -95,8 +95,14 @@ export interface BordirLogoCustomization {
   totalPrice: number;
 }
 
-// Discriminated union for order customization
+export interface GenericCustomization {
+  categorySlug: 'generic';
+  additionalNotes?: string;
+  totalPrice: number;
+}
+
 export type OrderCustomization =
   | SalempangCustomization
   | BordirNamaCustomization
-  | BordirLogoCustomization;
+  | BordirLogoCustomization
+  | GenericCustomization;

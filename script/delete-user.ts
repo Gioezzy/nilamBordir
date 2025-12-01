@@ -22,5 +22,4 @@ async function deleteUser(userId: string){
   }
 }
 
-// deleteUser('xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx')
-deleteUser('2aa58028-8324-428f-ad4d-5844db0f10a9')
+deleteUser('xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx')

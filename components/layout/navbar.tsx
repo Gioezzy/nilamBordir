@@ -36,7 +36,7 @@ const PROTECTED_MENU_ITEMS = [
 
 export default function Navbar() {
   const { totalItems } = useCart();
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useAuth();
   const pathname = usePathname();
   const userMenuRef = useRef<HTMLDivElement>(null);
   const shopMenuRef = useRef<HTMLDivElement>(null);
@@ -113,7 +113,6 @@ export default function Navbar() {
             Nilam Bordir
           </Link>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <div className="relative" ref={shopMenuRef}>
               <button
@@ -164,7 +163,6 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Right Side Icons */}
           <div className="flex items-center space-x-4">
             <Link
               href="/cart"
@@ -179,7 +177,7 @@ export default function Navbar() {
               )}
             </Link>
 
-            {!loading && (
+            {!isLoading && (
               <div className="hidden md:block relative" ref={userMenuRef}>
                 {user ? (
                   <>
@@ -232,7 +230,6 @@ export default function Navbar() {
               </div>
             )}
 
-            {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="md:hidden p-2 text-gray-600 hover:text-gray-900 transition-colors"
@@ -248,7 +245,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu Drawer */}
       {isMobileMenuOpen && (
         <div className="md:hidden border-t bg-white/95 backdrop-blur-md animate-in slide-in-from-top duration-300">
           <div className="flex flex-col px-4 py-4 space-y-1">
@@ -321,7 +317,7 @@ export default function Navbar() {
 
                 <div className="border-t my-2"></div>
 
-                {!loading && (
+                {!isLoading && (
                   <>
                     {user ? (
                       <Link
