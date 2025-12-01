@@ -56,25 +56,6 @@ export default function LoginForm() {
           disabled={isPending}
         />
 
-        {/* <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="password">Password</Label>
-            <Link
-              href="/forgot-password"
-              className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              Lupa Password?
-            </Link>
-          </div>
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            placeholder="******"
-            required
-            disabled={isPending}
-          />
-        </div> */}
         {error && (
           <div className="text-sm text-black-500 bg-red-500 border border-red-200 rounded-lg p-4">
             {error}
