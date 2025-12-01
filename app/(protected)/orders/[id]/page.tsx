@@ -23,10 +23,11 @@ interface OrderDetailPageProps {
 export default async function OrderDetailPage({
   params,
 }: OrderDetailPageProps) {
-  const order = await getOrderById(params.id);
-  if (!order) {
-    NotFound();
-  }
+  const { id } = await params;
+
+  const order = await getOrderById(id);
+
+  if (!order) NotFound();
 
   const payment = Array.isArray(order.payment)
     ? order.payment[0]

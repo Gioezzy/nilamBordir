@@ -19,9 +19,11 @@ interface OrdersPageProps {
 }
 
 export default async function OrdersPage({ searchParams }: OrdersPageProps) {
+  const params = await searchParams;
+
   const { orders, total } = await getUserOrders({
-    status: searchParams.status,
-    search: searchParams.search,
+    status: params.status,
+    search: params.search,
   });
 
   return (
