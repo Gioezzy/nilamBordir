@@ -22,27 +22,24 @@ function BordirNamaPreview({
   backgroundColor: string;
 }) {
   const bgHex =
-    BORDIR_CONFIG.SALEMPANG_COLORS.find(c => c.value === backgroundColor)?.hex ||
-    '#f1f5f9';
+    BORDIR_CONFIG.SALEMPANG_COLORS.find(c => c.value === backgroundColor)
+      ?.hex || '#f1f5f9';
   const textHex =
     BORDIR_CONFIG.THREAD_COLORS.find(c => c.value === textColor)?.hex ||
     '#000000';
 
   return (
     <div className="space-y-4">
-       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <p className="text-sm text-blue-900 font-medium">
-          📌 Preview Bordir Nama
+          Preview Bordir Nama
         </p>
       </div>
       <div
         className="rounded-lg p-8 overflow-hidden shadow-inner flex items-center justify-center aspect-video"
         style={{ backgroundColor: bgHex }}
       >
-        <p
-          className="text-4xl font-serif font-bold"
-          style={{ color: textHex }}
-        >
+        <p className="text-4xl font-serif font-bold" style={{ color: textHex }}>
           {name || 'Nama Anda'}
         </p>
       </div>
@@ -64,16 +61,25 @@ export default function BordirNamaForm({
   const [additionalNotes, setAdditionalNotes] = useState('');
 
   useEffect(() => {
+    const finalPrice = productBasePrice > 0 ? productBasePrice : 20000;
+
     const customization: BordirNamaCustomization = {
       categorySlug: 'bordir-nama',
       name,
       textColor,
       backgroundColor,
       additionalNotes: additionalNotes || undefined,
-      totalPrice: productBasePrice,
+      totalPrice: finalPrice,
     };
     onCustomizationChange(customization);
-  }, [name, textColor, backgroundColor, additionalNotes, productBasePrice]);
+  }, [
+    name,
+    textColor,
+    backgroundColor,
+    additionalNotes,
+    productBasePrice,
+    onCustomizationChange,
+  ]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
@@ -110,7 +116,9 @@ export default function BordirNamaForm({
         </div>
 
         <div>
-          <Label className="text-lg font-semibold">3. Pilih Warna Background</Label>
+          <Label className="text-lg font-semibold">
+            3. Pilih Warna Background
+          </Label>
           <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2 mt-2">
             {BORDIR_CONFIG.SALEMPANG_COLORS.map(color => (
               <button

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { BORDIR_CONFIG } from '@/lib/constans';
@@ -22,9 +22,8 @@ function BordirLogoPreview({
   backgroundColor: string;
 }) {
   const bgHex =
-    BORDIR_CONFIG.SALEMPANG_COLORS.find(c => c.value === backgroundColor)?.hex ||
-    '#f1f5f9';
-  
+    BORDIR_CONFIG.SALEMPANG_COLORS.find(c => c.value === backgroundColor)
+      ?.hex || '#f1f5f9';
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -40,9 +39,7 @@ function BordirLogoPreview({
   return (
     <div className="space-y-4">
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <p className="text-sm text-blue-900 font-medium">
-          📌 Preview Bordir Logo
-        </p>
+        <p className="text-sm text-blue-900 font-medium">Preview Bordir Logo</p>
       </div>
       <div
         className="rounded-lg p-8 overflow-hidden shadow-inner flex items-center justify-center aspect-video"
@@ -93,21 +90,31 @@ export default function BordirLogoForm({
   };
 
   useEffect(() => {
+    const finalPrice = productBasePrice > 0 ? productBasePrice : 25000;
+
     const customization: BordirLogoCustomization = {
       categorySlug: 'bordir-logo',
       logoFile,
       backgroundColor,
       additionalNotes: additionalNotes || undefined,
-      totalPrice: productBasePrice,
+      totalPrice: finalPrice,
     };
     onCustomizationChange(customization);
-  }, [logoFile, backgroundColor, additionalNotes, productBasePrice]);
+  }, [
+    logoFile,
+    backgroundColor,
+    additionalNotes,
+    productBasePrice,
+    onCustomizationChange,
+  ]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
       <div className="lg:col-span-2 space-y-8">
         <div>
-          <Label className="text-lg font-semibold">1. Upload Logo Referensi</Label>
+          <Label className="text-lg font-semibold">
+            1. Upload Logo Referensi
+          </Label>
           {logoFile ? (
             <div className="mt-2 flex items-center justify-between p-4 bg-gray-50 border rounded-lg">
               <div className="flex items-center gap-3">
@@ -147,7 +154,9 @@ export default function BordirLogoForm({
         </div>
 
         <div>
-          <Label className="text-lg font-semibold">2. Pilih Warna Background</Label>
+          <Label className="text-lg font-semibold">
+            2. Pilih Warna Background
+          </Label>
           <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2 mt-2">
             {BORDIR_CONFIG.SALEMPANG_COLORS.map(color => (
               <button
