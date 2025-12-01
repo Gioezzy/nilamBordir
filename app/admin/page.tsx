@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import StatsCard from '@/components/admin/stats-card';
 import { Package, ShoppingBag, Users, Image } from 'lucide-react';
 import { formatRupiah } from '@/lib/utils';
+import OrderStatusBadge from '@/components/dashboard/order-status-badge';
 
 export const metadata = {
   title: 'Admin Dashboard - Nilam Bordir',
@@ -109,30 +110,33 @@ export default async function AdminDashboard() {
               </tr>
             </thead>
             <tbody className="divide-y">
-              {recentOrders?.map(order => (
-                <tr key={order.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 text-sm">{order.order_number}</td>
-                  <td className="px-4 py-3 text-sm">
-                    {order.profiles?.full_name}
-                  </td>
-                  <td className="px-4 py-3 text-sm">
-                    {formatRupiah(order.total_amount)}
-                  </td>
-                  <td className="px-4 py-3 text-sm">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        order.status === 'completed'
-                          ? 'bg-green-100 text-green-800'
-                          : order.status === 'cancelled'
-                          ? 'bg-red-100 text-red-800'
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}
-                    >
-                      {order.status}
-                    </span>
+              {recentOrders && recentOrders.length > 0 ? (
+                recentOrders.map(order => (
+                  <tr key={order.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-sm font-medium">
+                      {order.order_number}
+                    </td>
+                    <td className="px-4 py-3 text-sm">
+                      {order.profiles?.full_name || 'N/A'}
+                    </td>
+                    <td className="px-4 py-3 text-sm">
+                      {formatRupiah(order.total_amount)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <OrderStatusBadge status={order.status} />
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={4}
+                    className="px-4 py-8 text-center text-gray-500"
+                  >
+                    Belum ada pesanan
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
