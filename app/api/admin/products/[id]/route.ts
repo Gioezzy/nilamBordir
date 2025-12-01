@@ -2,10 +2,13 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
-export async function PUT(request: Request, { params }: { params: { id: string } }){
+export async function PUT(
+  request: Request,
+  context: { params: Promise<{ id: string }> }
+) {
   try{
     const supabase = await createClient()
-    const { id } = params;
+    const { id } = await context.params;
 
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
@@ -44,11 +47,13 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(
+  request: Request,
+  context: { params: Promise<{ id: string }> }
+) {
   try {
     const supabase = await createClient();
-    const { id } = params;
-    
+    const { id } = await context.params;
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {

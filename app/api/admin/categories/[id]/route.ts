@@ -1,19 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function PUT(
   request: NextRequest,
-  {params}: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  
-
   try {
     const { id } = await params;
     const supabase = await createClient();
-    
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -25,13 +21,21 @@ export async function PUT(
       .single();
 
     if (!profile || profile.role !== 'admin') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403});
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const body = await request.json();
-    const { slug, name, description, image_url, display_order, is_active } = body;
+    const {
+      name,
+      slug,
+      description,
+      image_url,
+      display_order,
+      is_active,
+      removeOldImage,
+    } = body;
 
-    if (slug){
+    if (slug) {
       const { data: existing } = await supabase
         .from('categories')
         .select('id')
@@ -39,40 +43,47 @@ export async function PUT(
         .neq('id', id)
         .maybeSingle();
 
-      if (existing){
-        return NextResponse.json(
-          { error: 'Slug sudah digunakan' },
-          { status: 400}
-        );
+      if (existing) {
+        return NextResponse.json({ error: 'Slug sudah digunakan' }, { status: 400 });
       }
     }
 
-    const updateObj: any = {};
-
-    if (name !== undefined) updateObj.name = name;
-    if (slug !== undefined) updateObj.slug = slug;
-    if (description !== undefined) updateObj.description = description;
-    if (image_url !== undefined) updateObj.image_url = image_url;
-    if (display_order !== undefined) updateObj.display_order = display_order;
-    if (is_active !== undefined) updateObj.is_active = is_active;
-
-    const { data: category, error: updateError } = await supabase
+    const { data: oldCategory } = await supabase
       .from('categories')
-      .update(updateObj)
+      .select('image_url')
       .eq('id', id)
-      .select('id, name, slug, description, image_url, display_order, is_active, updated_at')
       .single();
 
+    if (removeOldImage && oldCategory?.image_url) {
+      const path = oldCategory.image_url.split('/public/')[1];
 
-    if (updateError){
-      console.error('Update error:', updateError);
-      return NextResponse.json({ error: updateError.message}, { status: 400 });
+      if (path) {
+        await supabase.storage.from('uploads').remove([path]);
+      }
     }
 
-    return NextResponse.json({ success: true, data: category });
-  } catch (error) {
-    console.error('API error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    const { error: updateError, data } = await supabase
+      .from('categories')
+      .update({
+        name,
+        slug,
+        description,
+        image_url: removeOldImage ? null : image_url,
+        display_order,
+        is_active,
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (updateError) {
+      return NextResponse.json({ error: updateError.message }, { status: 400 });
+    }
+
+    return NextResponse.json({ success: true, data });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: 'Server error' }, { status: 500 });
   }
 }
 
@@ -83,12 +94,9 @@ export async function DELETE(
   try {
     const { id } = await params;
     const supabase = await createClient();
-    
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { data: profile } = await supabase
       .from('profiles')
@@ -112,18 +120,14 @@ export async function DELETE(
       );
     }
 
-    const { error: deleteError } = await supabase
-      .from('categories')
-      .delete()
-      .eq('id', id);
-
-    if (deleteError) {
-      return NextResponse.json({ error: deleteError.message }, { status: 400 });
+    const { error } = await supabase.from('categories').delete().eq('id', id);
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('API error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: 'Server error' }, { status: 500 });
   }
 }

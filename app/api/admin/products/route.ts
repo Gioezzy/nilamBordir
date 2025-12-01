@@ -50,9 +50,6 @@ export async function POST(request: Request){
       })
       .select()
       .single()
-    
-    console.log("PRODUCT PAYLOAD:", body)
-    console.log(product)
 
     if(insertError){
       console.error('Inser error:', insertError)
