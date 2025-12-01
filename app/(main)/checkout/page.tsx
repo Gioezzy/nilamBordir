@@ -61,7 +61,7 @@ export default function CheckoutPage() {
 
       const orderItems = items.map(item => ({
         productId: item.productId,
-        productName: item.name,
+        productName: item.productName,
         quantity: item.quantity,
         unitPrice: item.price,
       }));
@@ -90,9 +90,7 @@ export default function CheckoutPage() {
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* LEFT */}
           <div className="lg:col-span-2 space-y-8">
-            {/* INFORMASI KONTAK */}
             <div className="bg-white rounded-2xl shadow-sm border p-6 space-y-6">
               <h2 className="text-xl font-semibold">Informasi Kontak</h2>
 
@@ -114,7 +112,6 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* METODE PENGAMBILAN */}
             <div className="bg-white rounded-2xl shadow-sm border p-6 space-y-6">
               <h2 className="text-xl font-semibold">Metode Pengambilan</h2>
 
@@ -187,7 +184,6 @@ export default function CheckoutPage() {
               )}
             </div>
 
-            {/* CATATAN */}
             <div className="bg-white rounded-2xl shadow-sm border p-6 space-y-2">
               <h2 className="text-xl font-semibold">Catatan Tambahan</h2>
               <Textarea
@@ -200,7 +196,6 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* RIGHT */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-sm border p-6 space-y-5 sticky top-24">
               <h2 className="text-xl font-semibold">Ringkasan Pesanan</h2>
@@ -209,7 +204,7 @@ export default function CheckoutPage() {
                 {items.map(item => (
                   <div key={item.id} className="flex justify-between text-sm">
                     <div>
-                      <p className="font-semibold">{item.name}</p>
+                      <p className="font-semibold">{item.productName}</p>
                       <p className="text-gray-600">Qty: {item.quantity}</p>
                     </div>
                     <p className="font-semibold">
