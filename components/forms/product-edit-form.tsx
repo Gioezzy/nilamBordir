@@ -180,7 +180,6 @@ export default function ProductEditForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      {/* === Informasi Produk === */}
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
@@ -250,7 +249,6 @@ export default function ProductEditForm({
         </CardContent>
       </Card>
 
-      {/* === Harga & Lead Time === */}
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
@@ -311,7 +309,6 @@ export default function ProductEditForm({
         </CardContent>
       </Card>
 
-      {/* === Gambar Produk === */}
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold">Gambar Produk</CardTitle>
@@ -369,7 +366,6 @@ export default function ProductEditForm({
         </CardContent>
       </Card>
 
-      {/* === TOMBOL SAVE === */}
       <div className="flex gap-3">
         <Button type="submit" disabled={isPending} className="flex-1">
           {isPending ? 'Menyimpan...' : 'Simpan Perubahan'}

@@ -4,10 +4,11 @@ import Image from 'next/image';
 import { Minus, Plus, X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { formatRupiah } from '@/lib/utils';
-import { useCart, type CartItem as CartItemType } from '@/context/cart-context';
+import { useCart } from '@/context/cart-context';
+import type { CartItem } from '@/lib/types';
 
 interface CartItemProps {
-  item: CartItemType;
+  item: CartItem;
 }
 
 export default function CartItem({ item }: CartItemProps) {
@@ -29,13 +30,13 @@ export default function CartItem({ item }: CartItemProps) {
       </div>
 
       <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-gray-900 mb-1">{item.name}</h3>
+        <h3 className="font-semibold text-gray-900 mb-1">{item.productName}</h3>
         <p className="text-lg font-bold text-gray-900">
           {formatRupiah(item.price)}
         </p>
-        {item.customNotes && (
+        {item.customization && (
           <p className="text-sm text-gray-600 mt-1">
-            Catatan: {item.customNotes}
+            Catatan: {JSON.stringify(item.customization)}
           </p>
         )}
       </div>
@@ -60,7 +61,7 @@ export default function CartItem({ item }: CartItemProps) {
             <Minus className="w-4 h-4" />
           </Button>
           <span className="w-8 text-center font-medium">
-            {item.quantity + 1}
+            {item.quantity}
           </span>
           <Button
             variant="ghost"

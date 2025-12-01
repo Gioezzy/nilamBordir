@@ -58,7 +58,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
         />
 
         <div className="mt-8 grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">
-          {/* Left Column: Image Gallery */}
           <div className="lg:col-span-1">
             <ProductImageGallery
               images={product.sample_images || []}
@@ -67,7 +66,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
             />
           </div>
 
-          {/* Right Column: Product Info */}
           <div className="lg:col-span-1">
             <div className="lg:sticky lg:top-24 lg:self-start space-y-6">
               <div className="space-y-3">
@@ -83,7 +81,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
               <Separator />
 
-              {/* Price and Description */}
               <div className="space-y-4">
                 <p className="text-4xl font-bold text-gray-900">
                   {formatRupiah(product.price)}
@@ -96,7 +93,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 )}
               </div>
 
-              {/* Lead Time */}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <p className="text-sm text-blue-900">
                   <span className="font-semibold">Estimasi Pengerjaan:</span>{' '}
@@ -104,7 +100,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 </p>
               </div>
 
-              {/* Order Form or Add to Cart Button */}
               <div className="bg-white border rounded-lg p-6">
                 {product.category?.slug === 'salempang-bordir' ? (
                   <Link
@@ -121,7 +116,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 )}
               </div>
 
-              {/* Guarantees */}
               <div className="space-y-2 text-sm text-gray-600 pt-4">
                 <p>✓ Bordir berkualitas tinggi</p>
                 <p>✓ Garansi kepuasan 100%</p>
@@ -131,7 +125,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         </div>
 
-        {/* Related Products */}
         {relatedProducts.length > 0 && (
           <div className="mt-24">
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 mb-8">

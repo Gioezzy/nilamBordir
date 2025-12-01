@@ -28,11 +28,17 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
   const handleAddToCart = () => {
     addItem({
       productId: product.id,
-      name: product.name,
+      productName: product.name,
       price: product.price,
       quantity,
       image: getProductImage(product.sample_images),
-      customNotes: customNotes || undefined,
+      customization: customNotes
+        ? {
+            categorySlug: 'generic',
+            additionalNotes: customNotes,
+            totalPrice: product.price,
+          }
+        : undefined,
     });
 
     toast.success('Produk ditambahkan ke keranjang!');

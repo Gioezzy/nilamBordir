@@ -32,7 +32,7 @@ export default function ProductOrderForm({ product }: ProductOrderFormProps) {
     addItem({
       productId: product.id,
       productName: product.name,
-      price: customization.totalPrice, // Use the final price from the builder
+      price: customization.totalPrice, 
       quantity,
       image: getProductImage(product.sample_images),
       customization: customization,
