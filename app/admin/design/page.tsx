@@ -26,7 +26,7 @@ export default async function AdminDesignPage({
     .select(
       `
       *,
-      profiles(full_name, phone),
+      profiles!user_id(full_name, phone),
       categories(name)
     `
     )

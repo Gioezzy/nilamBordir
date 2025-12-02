@@ -26,7 +26,7 @@ export default async function AdminDashboard() {
     .eq('role', 'customer');
 
   const { count: totalDesigns } = await supabase
-    .from('design')
+    .from('designs')
     .select('*', { count: 'exact', head: true });
 
   const { data: orders } = await supabase
