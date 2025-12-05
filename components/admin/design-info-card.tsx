@@ -1,4 +1,4 @@
-import { FileText, Clock } from 'lucide-react';
+import { FileText } from 'lucide-react';
 
 interface DesignInfoCardProps {
   fileName: string;
