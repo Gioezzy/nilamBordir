@@ -9,6 +9,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, MapPin, CreditCard, Package } from 'lucide-react';
 import CancelOrderButton from '@/components/orders/cancel-order-button';
+import PaymentButton from '@/components/orders/payment-button';
+import PaymentNotification from '@/components/orders/payment-notification';
 
 export const metadata = {
   title: 'Detail Pesanan - Nilam Bordir',
@@ -23,11 +25,10 @@ interface OrderDetailPageProps {
 export default async function OrderDetailPage({
   params,
 }: OrderDetailPageProps) {
-  const { id } = await params;
-
-  const order = await getOrderById(id);
-
-  if (!order) NotFound();
+  const order = await getOrderById(params.id);
+  if (!order) {
+    NotFound();
+  }
 
   const payment = Array.isArray(order.payment)
     ? order.payment[0]
@@ -41,6 +42,8 @@ export default async function OrderDetailPage({
           Kembali ke Pesanan
         </Button>
       </Link>
+
+      <PaymentNotification orderId={order.id} currentStatus={order.status} />
 
       <div className="bg-white rounded-lg border p-6">
         <div className="flex items-start justify-between mb-4">
@@ -88,7 +91,7 @@ export default async function OrderDetailPage({
                 <h3 className="font-semibold text-gray-900">
                   {item.product?.name || item.product_snapshot?.name}
                 </h3>
-                <p className="text-s text-gray-600 mt-1">
+                <p className="text-sm text-gray-600 mt-1">
                   {formatRupiah(item.unit_price)} x {item.quantity}
                 </p>
                 {item.design && (
@@ -108,7 +111,7 @@ export default async function OrderDetailPage({
       </div>
 
       <div className="bg-white rounded-lg border p-6">
-        <h2 className="text-lg from-semibold mb-4">Ringkasan Pesanan</h2>
+        <h2 className="text-lg font-semibold mb-4">Ringkasan Pesanan</h2>
         <div className="space-y-3">
           <div className="flex justify-between text-gray-600">
             <span>Subtotal</span>
@@ -118,7 +121,7 @@ export default async function OrderDetailPage({
             <span>Biaya Pengiriman</span>
             <span>
               {order.pickup_method === 'in_store'
-                ? 'Gratis (Ambil di Toko'
+                ? 'Gratis (Ambil di Toko)'
                 : 'Akan Dikonfirmasi'}
             </span>
           </div>
@@ -163,16 +166,16 @@ export default async function OrderDetailPage({
             <CreditCard className="w-5 h-5 mr-2" />
             Informasi Pembayaran
           </h2>
-          <div className="space-y-2 text-gray-600">
-            <p>
-              <span className="font-medium">Status:</span>{' '}
+          <div className="space-y-3">
+            <div>
+              <p className="text-sm text-gray-600">Status</p>
               <span
-                className={`font-semibold ${
+                className={`inline-block mt-1 px-3 py-1 rounded-full text-xs font-medium ${
                   payment.status === 'success'
-                    ? 'text-green-600'
+                    ? 'bg-green-100 text-green-800'
                     : payment.status === 'pending'
-                    ? 'text-yellow-600'
-                    : 'text-red-600'
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : 'bg-red-100 text-red-800'
                 }`}
               >
                 {payment.status === 'success'
@@ -181,24 +184,37 @@ export default async function OrderDetailPage({
                   ? 'Menunggu'
                   : 'Gagal'}
               </span>
-            </p>
+            </div>
             {payment.method && (
-              <p>
-                <span className="font-medium">Metode:</span> {payment.method}
-              </p>
+              <div>
+                <p className="text-sm text-gray-600">Metode</p>
+                <p className="font-medium capitalize">
+                  {payment.method.replace('_', ' ')}
+                </p>
+              </div>
             )}
+            <div>
+              <p className="text-sm text-gray-600">Total</p>
+              <p className="font-bold text-lg">
+                {formatRupiah(payment.amount)}
+              </p>
+            </div>
           </div>
         </div>
       )}
 
       {order.status === 'pending_payment' && (
         <div className="flex gap-4">
+          <div className="flex-1">
+            <PaymentButton
+              orderId={order.id}
+              orderNumber={order.order_number}
+              paymentToken={payment?.midtrans_order_id}
+              paymentStatus={payment?.status || 'pending'}
+              orderStatus={order.status}
+            />
+          </div>
           <CancelOrderButton orderId={order.id} />
-          {payment?.midtrans_order_id && (
-            <Button variant="default" className="flex-1">
-              Lanjutkan Pembayaran
-            </Button>
-          )}
         </div>
       )}
     </div>
