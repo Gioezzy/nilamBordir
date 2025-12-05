@@ -24,7 +24,7 @@ export default function SalempangForm({
   onCustomizationChange,
 }: SalempangFormProps) {
   const [titik, setTitik] = useState(BORDIR_CONFIG.TITIK_OPTIONS[0].value);
-  const [font, setFont] = useState(BORDIR_CONFIG.FONT_STYLES[0].value);
+  const [font] = useState(BORDIR_CONFIG.FONT_STYLES[0].value);
   const [threadColor, setThreadColor] = useState(
     BORDIR_CONFIG.THREAD_COLORS[0].value
   );
