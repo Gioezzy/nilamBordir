@@ -9,6 +9,7 @@ import {
   User,
   Upload,
   LogOut,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { logoutAction } from '@/lib/actions/auth';
 import { useTransition } from 'react';
@@ -24,6 +25,11 @@ const menuItems = [
     title: 'Pesanan Saya',
     href: '/orders',
     icon: ShoppingBag,
+  },
+  {
+    title: 'Design Saya',
+    href: '/designs',
+    icon: ImageIcon,
   },
   {
     title: 'Upload Desain',
