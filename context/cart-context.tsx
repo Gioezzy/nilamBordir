@@ -7,7 +7,7 @@ import {
   useState,
   ReactNode,
 } from 'react';
-import { CartItem, OrderCustomization } from '@/lib/types';
+import { CartItem } from '@/lib/types';
 import isEqual from 'lodash.isequal';
 
 interface CartContentType {
@@ -28,7 +28,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [mounted, setMounted] = useState(false);
 
-  // load cart from local storage on mount
   useEffect(() => {
     const savedCart = localStorage.getItem(CART_STORAGE_KEY);
     if (savedCart) {
@@ -41,7 +40,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setMounted(true);
   }, []);
 
-  // save cart to local storage on items change
   useEffect(() => {
     if (mounted) {
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
@@ -50,7 +48,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addItem = (item: Omit<CartItem, 'id'>) => {
     setItems(prev => {
-      // Check if an item with the same product ID and identical customization already exists
       const existingItemIndex = prev.findIndex(
         i =>
           i.productId === item.productId &&
@@ -58,13 +55,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
       );
 
       if (existingItemIndex > -1) {
-        // If it exists, update the quantity
         const updated = [...prev];
         updated[existingItemIndex].quantity += item.quantity;
         return updated;
       }
 
-      // Otherwise, add it as a new item
       return [...prev, { ...item, id: Date.now().toString() }];
     });
   };
