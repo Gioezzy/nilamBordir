@@ -33,6 +33,9 @@ declare module 'midtrans-client' {
     credit_card?: {
       secure?: boolean;
     };
+    callbacks?: {
+      finish?: string;
+    };
   }
 
   export interface TransactionResponse {
@@ -57,11 +60,6 @@ declare module 'midtrans-client' {
     createTransaction(
       parameter: TransactionRequest
     ): Promise<TransactionResponse>;
-    transaction: {
-      status(orderId: string): Promise<TransactionStatus>;
-      cancel(orderId: string): Promise<TransactionStatus>;
-      refund(orderId: string): Promise<TransactionStatus>;
-    };
   }
 
   export class CoreApi {
@@ -69,5 +67,10 @@ declare module 'midtrans-client' {
     charge(parameter: any): Promise<any>;
     capture(parameter: any): Promise<any>;
     cardRegister(parameter: any): Promise<any>;
+    transaction: {
+      status(orderId: string): Promise<TransactionStatus>;
+      cancel(orderId: string): Promise<TransactionStatus>;
+      refund(orderId: string): Promise<TransactionStatus>;
+    };
   }
 }

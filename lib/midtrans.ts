@@ -1,14 +1,20 @@
 import midtransclient from 'midtrans-client';
 
 if (!process.env.MIDTRANS_SERVER_KEY) {
-  throw new Error('Midtrans server key is not set in environment variables');
+  throw new Error('Midtrans server key is not set');
 }
 
 if (!process.env.MIDTRANS_CLIENT_KEY) {
-  throw new Error('Midtrans client key is not set in environment variables');
+  throw new Error('Midtrans client key is not set');
 }
 
 export const snap = new midtransclient.Snap({
+  isProduction: process.env.MIDTRANS_IS_PRODUCTION === 'true',
+  serverKey: process.env.MIDTRANS_SERVER_KEY,
+  clientKey: process.env.MIDTRANS_CLIENT_KEY,
+});
+
+export const coreApi = new midtransclient.CoreApi({
   isProduction: process.env.MIDTRANS_IS_PRODUCTION === 'true',
   serverKey: process.env.MIDTRANS_SERVER_KEY,
   clientKey: process.env.MIDTRANS_CLIENT_KEY,
@@ -56,14 +62,18 @@ export async function createMidtransTransaction(params: {
       credit_card: {
         secure: true,
       },
+      callbacks: {
+        finish: `${process.env.NEXT_PUBLIC_BASE_URL}/orders`,
+      },
     });
+
     return {
       success: true,
       token: transaction.token,
       redirectUrl: transaction.redirect_url,
     };
   } catch (error) {
-    console.log('Midtrans transaction error: ', error);
+    console.error('Midtrans transaction error:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -71,15 +81,31 @@ export async function createMidtransTransaction(params: {
   }
 }
 
-export async function chackTransactionStatus(orderId: string) {
+export async function checkTransactionStatus(orderId: string) {
   try {
-    const status = await snap.transaction.status(orderId);
+    const status = await coreApi.transaction.status(orderId);
     return {
       success: true,
       data: status,
     };
   } catch (error) {
-    console.log('Check transaction status error: ', error);
+    console.error('Check transaction status error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+export async function cancelTransaction(orderId: string) {
+  try {
+    const result = await coreApi.transaction.cancel(orderId);
+    return {
+      success: true,
+      data: result,
+    };
+  } catch (error) {
+    console.error('Cancel transaction error:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
