@@ -13,7 +13,9 @@ export default function DesignPreviewCard({
 }: DesignPreviewCardProps) {
   return (
     <div className="bg-white rounded-lg border p-6 shadow-sm">
-      <h2 className="text-xl font-semibold mb-4 text-gray-800">Preview Design</h2>
+      <h2 className="text-xl font-semibold mb-4 text-gray-800">
+        Preview Design
+      </h2>
       <div className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden border border-gray-200 mb-4">
         <Image
           src={fileUrl}

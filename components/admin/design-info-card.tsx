@@ -1,4 +1,5 @@
 import { FileText } from 'lucide-react';
+import { ReactNode } from 'react';
 
 interface DesignInfoCardProps {
   fileName: string;
@@ -6,7 +7,7 @@ interface DesignInfoCardProps {
   categorySlug: string | null;
   status: string;
   adminNotes: string | null;
-  getStatusBadge: (status: string) => JSX.Element | null;
+  getStatusBadge: (status: string) => ReactNode;
 }
 
 export default function DesignInfoCard({
@@ -19,7 +20,9 @@ export default function DesignInfoCard({
 }: DesignInfoCardProps) {
   return (
     <div className="bg-white rounded-lg border p-6 shadow-sm">
-      <h2 className="text-xl font-semibold mb-4 text-gray-800">Informasi Design</h2>
+      <h2 className="text-xl font-semibold mb-4 text-gray-800">
+        Informasi Design
+      </h2>
       <dl className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-sm">
         <div>
           <dt className="font-medium text-gray-600">Nama File</dt>
@@ -29,7 +32,9 @@ export default function DesignInfoCard({
         {description && (
           <div>
             <dt className="font-medium text-gray-600">Deskripsi</dt>
-            <dd className="mt-1 text-gray-900 whitespace-pre-wrap">{description}</dd>
+            <dd className="mt-1 text-gray-900 whitespace-pre-wrap">
+              {description}
+            </dd>
           </div>
         )}
 
@@ -52,7 +57,9 @@ export default function DesignInfoCard({
             <FileText className="w-4 h-4" />
             Catatan Admin
           </h3>
-          <p className="text-sm text-blue-800 whitespace-pre-wrap">{adminNotes}</p>
+          <p className="text-sm text-blue-800 whitespace-pre-wrap">
+            {adminNotes}
+          </p>
         </div>
       )}
     </div>
