@@ -12,6 +12,7 @@ import {
   LogOut,
   Home,
   Menu,
+  TrendingUp,
 } from 'lucide-react';
 import { logoutAction } from '@/lib/actions/auth';
 import { useState, useTransition } from 'react';
@@ -22,6 +23,11 @@ const menuItems = [
     title: 'Dashboard',
     href: '/admin',
     icon: LayoutDashboard,
+  },
+  {
+    title: 'Analytics',
+    href: '/admin/analytics',
+    icon: TrendingUp,
   },
   {
     title: 'Produk',

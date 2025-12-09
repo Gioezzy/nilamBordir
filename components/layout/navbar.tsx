@@ -11,6 +11,7 @@ import {
   Upload,
   ShoppingBag,
 } from 'lucide-react';
+import NotificationBell from '../notifications/notification-bell';
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 import { useCart } from '@/hooks/use-cart';
@@ -164,6 +165,7 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center space-x-4">
+            <NotificationBell />
             <Link
               href="/cart"
               className="relative flex items-center text-gray-600 hover:text-gray-900 transition-colors group"
