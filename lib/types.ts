@@ -22,13 +22,41 @@ export type OrderInsert = Database['public']['Tables']['orders']['Insert'];
 export type ProfileUpdate = Database['public']['Tables']['profiles']['Update'];
 export type ProductUpdate = Database['public']['Tables']['products']['Update'];
 
+export interface ProductImage {
+  url: string;
+}
+
+export type ProductWithTypedImages = Omit<Product, 'sample_images'> & {
+  sample_images: ProductImage[] | null;
+};
+
+export interface ProductSnapshot {
+  name: string;
+  price: number;
+}
+
+export type TypedOrderItem = Omit<OrderItem, 'product_snapshot'> & {
+  product_snapshot: ProductSnapshot | null;
+};
+
+export type TypedPayment = Payment & {
+  midtrans_token: string | null;
+};
+
 export interface OrderWithDetails extends Order {
-  order_items: (OrderItem & {
-    product: Product | null;
+  order_items: (TypedOrderItem & {
+    product: ProductWithTypedImages | null;
     design: Design | null;
   })[];
-  payment: Payment | null;
-  profile: Profile;
+  payment: TypedPayment[] | null;
+}
+
+export interface AdminOrderItem extends OrderItem {
+  products: {
+    name: string;
+    sample_images: ProductImage[] | null;
+  } | null;
+  designs: Design | null;
 }
 
 export interface CartItem {
@@ -99,6 +127,17 @@ export interface GenericCustomization {
   categorySlug: 'generic';
   additionalNotes?: string;
   totalPrice: number;
+}
+
+export interface Notification {
+  id: string;
+  user_id: string;
+  title: string;
+  message: string;
+  type: 'order' | 'payment' | 'design' | 'system';
+  is_read?: string;
+  related_id?: string;
+  created_at: string;
 }
 
 export type OrderCustomization =

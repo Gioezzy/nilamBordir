@@ -158,6 +158,50 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          related_id: string | null
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          related_id?: string | null
+          title: string
+          type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          related_id?: string | null
+          title?: string
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_items: {
         Row: {
           created_at: string | null
@@ -168,7 +212,7 @@ export type Database = {
           line_total: number
           order_id: string
           product_id: string | null
-          products_snapshot: Json | null
+          product_snapshot: Json | null
           quantity: number
           unit_price: number
         }
@@ -181,7 +225,7 @@ export type Database = {
           line_total: number
           order_id: string
           product_id?: string | null
-          products_snapshot?: Json | null
+          product_snapshot?: Json | null
           quantity?: number
           unit_price: number
         }
@@ -194,7 +238,7 @@ export type Database = {
           line_total?: number
           order_id?: string
           product_id?: string | null
-          products_snapshot?: Json | null
+          product_snapshot?: Json | null
           quantity?: number
           unit_price?: number
         }
