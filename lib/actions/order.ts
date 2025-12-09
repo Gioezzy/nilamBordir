@@ -1,5 +1,6 @@
 'use server'
 
+import { OrderWithDetails } from '../types';
 import { createClient } from "@/lib/supabase/server"
 import { createMidtransTransaction } from "../midtrans"
 import { generateOrderNumber } from "../utils"
@@ -101,7 +102,7 @@ export async function createOrderAction(input: CreateOrderInput){
     }))
   })
 
-  if (!paymentResult.success){
+  if (!paymentResult.success || !paymentResult.token) {
     return { error: 'Failed to create payment'}
   }
 
@@ -109,7 +110,8 @@ export async function createOrderAction(input: CreateOrderInput){
     order_id: order.id,
     midtrans_order_id: orderNumber,
     amount: totalAmount,
-    status: 'pending'
+    status: 'pending',
+    midtrans_token: paymentResult.token,
   })
 
   if (paymentResult.redirectUrl){
@@ -180,7 +182,7 @@ export const getUserOrders = cache(async (filters?: {
   return { orders: data, total: count || 0}
 })
 
-export const getOrderById = cache(async (orderId: string) => {
+export const getOrderById = cache(async (orderId: string): Promise<OrderWithDetails | null> => {
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
@@ -198,7 +200,9 @@ export const getOrderById = cache(async (orderId: string) => {
         product:products (*),
         design:designs (*)
       ),
-      payment:payments (*)
+      payment:payments (
+        *
+      )
     `)
     .eq('id', orderId)
     .eq('user_id', user.id)
@@ -209,7 +213,7 @@ export const getOrderById = cache(async (orderId: string) => {
     return null
   }
 
-  return data
+  return data as OrderWithDetails | null
 })
 
 export const getUserOrderStats = cache(async () => {
@@ -252,11 +256,63 @@ export const getUserOrderStats = cache(async () => {
   return stats
 })
 
+
+
+export async function getOrderIdByOrderNumber(orderNumber: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return null;
+  }
+
+  const { data: ownedOrder, error: ownedError } = await supabase
+    .from('orders')
+    .select('id')
+    .eq('order_number', orderNumber)
+    .eq('user_id', user.id)
+    .single();
+
+  if (ownedOrder) {
+    return ownedOrder.id;
+  }
+
+  if (ownedError && ownedError.code !== 'PGRST116') { 
+      console.error('Error fetching owned order ID:', ownedError);
+  }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+
+  if (profile && profile.role === 'admin') {
+    const { data: adminOrder, error: adminError } = await supabase
+      .from('orders')
+      .select('id')
+      .eq('order_number', orderNumber)
+      .single();
+
+    if (adminOrder) {
+      return adminOrder.id;
+    }
+    
+    if (adminError) {
+        console.error('Admin: Error fetching order ID by order number:', adminError);
+    }
+  }
+
+  return null;
+}
+
+
+
 export async function cancelOrderAction(orderId: string){
-  const supabase = await createClient()
+  const supabase = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser()
-
+  const { data: { user } } = await supabase.auth.getUser();
+  
   if(!user){
     return { error: 'Unauthorized' }
   }

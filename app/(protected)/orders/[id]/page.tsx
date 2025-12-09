@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import NotFound from '@/app/not-found';
 import { getOrderById } from '@/lib/actions/order';
 import { formatRupiah, formatDate } from '@/lib/utils';
 import OrderStatusBadge from '@/components/dashboard/order-status-badge';
@@ -11,6 +9,8 @@ import { ChevronLeft, MapPin, CreditCard, Package } from 'lucide-react';
 import CancelOrderButton from '@/components/orders/cancel-order-button';
 import PaymentButton from '@/components/orders/payment-button';
 import PaymentNotification from '@/components/orders/payment-notification';
+import OrderTrackingTimeline from '@/components/orders/order-tracking-timeline';
+import { notFound } from 'next/navigation';
 
 export const metadata = {
   title: 'Detail Pesanan - Nilam Bordir',
@@ -25,14 +25,13 @@ interface OrderDetailPageProps {
 export default async function OrderDetailPage({
   params,
 }: OrderDetailPageProps) {
-  const order = await getOrderById(params.id);
+  const { id } = await params;
+  const order = await getOrderById(id);
   if (!order) {
-    NotFound();
+    notFound();
   }
 
-  const payment = Array.isArray(order.payment)
-    ? order.payment[0]
-    : order.payment;
+  const payment = order.payment?.[0];
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -43,7 +42,7 @@ export default async function OrderDetailPage({
         </Button>
       </Link>
 
-      <PaymentNotification orderId={order.id} currentStatus={order.status} />
+      <PaymentNotification orderId={order.id} currentStatus={order.status || 'unknown'} />
 
       <div className="bg-white rounded-lg border p-6">
         <div className="flex items-start justify-between mb-4">
@@ -52,14 +51,14 @@ export default async function OrderDetailPage({
               {order.order_number}
             </h1>
             <p className="text-gray-600">
-              Dipesan pada {formatDate(order.created_at)}
+              Dipesan pada {formatDate(order.created_at || '')}
             </p>
           </div>
-          <OrderStatusBadge status={order.status} />
+          <OrderStatusBadge status={order.status || 'unknown'} />
         </div>
 
         <div className="mt-6">
-          <OrderTimeline status={order.status} />
+          <OrderTimeline status={order.status || 'unknown'} />
         </div>
       </div>
 
@@ -69,7 +68,7 @@ export default async function OrderDetailPage({
           Item Pesanan
         </h2>
         <div className="space-y-4">
-          {order.order_items?.map((item: any) => (
+          {order.order_items?.map(item => (
             <div
               key={item.id}
               className="flex gap-4 pb-4 border-b last:border-0"
@@ -131,6 +130,18 @@ export default async function OrderDetailPage({
             <span>{formatRupiah(order.total_amount)}</span>
           </div>
         </div>
+      </div>
+
+      <div className="bg-white rounded-lg border p-6">
+        <OrderTrackingTimeline order={{
+          status: order.status || 'unknown',
+          created_at: order.created_at || new Date().toISOString(),
+          updated_at: order.updated_at || new Date().toISOString(),
+          payment: order.payment?.map(p => ({
+            created_at: p.created_at || new Date().toISOString(),
+            status: p.status || 'unknown',
+          })) || undefined,
+        }} />
       </div>
 
       <div className="bg-white rounded-lg border p-6">
@@ -209,9 +220,9 @@ export default async function OrderDetailPage({
             <PaymentButton
               orderId={order.id}
               orderNumber={order.order_number}
-              paymentToken={payment?.midtrans_order_id}
+              paymentToken={payment?.midtrans_token ?? undefined}
               paymentStatus={payment?.status || 'pending'}
-              orderStatus={order.status}
+              orderStatus={order.status || 'pending_payment'}
             />
           </div>
           <CancelOrderButton orderId={order.id} />

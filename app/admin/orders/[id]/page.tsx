@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import NotFound from '@/app/not-found';
 import { ChevronLeft, MapPin, CreditCard, Package, User } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,7 @@ import { formatRupiah, formatDate } from '@/lib/utils';
 import OrderStatusBadge from '@/components/dashboard/order-status-badge';
 import Image from 'next/image';
 import OrderStatusUpdateForm from '@/components/admin/order-status-update-form';
+import { AdminOrderItem } from '@/lib/types';
 
 export const metadata = {
   title: 'Detail Pesanan - Admin',
@@ -39,7 +39,7 @@ export default async function AdminOrderDetailPage({
     .single();
 
   if (error || !order) {
-    NotFound();
+    notFound();
   }
 
   const payment = Array.isArray(order.payments)
@@ -71,7 +71,7 @@ export default async function AdminOrderDetailPage({
               Item Pesanan
             </h2>
             <div className="space-y-4">
-              {order.order_items?.map((item: any) => (
+              {order.order_items?.map((item: AdminOrderItem) => (
                 <div
                   key={item.id}
                   className="flex gap-4 pb-4 border-b last:border-0"
