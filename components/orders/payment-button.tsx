@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
 import { CreditCard, Loader2, RefreshCcw } from 'lucide-react';
 import { toast } from 'sonner';
-import { checkPaymentStatusAction } from '@/lib/actions/payment';
+import {
+  checkPaymentStatusAction,
+  generatePaymentTokenAction,
+} from '@/lib/actions/payment';
 import { useRouter } from 'next/navigation';
 
 interface PaymentButtonProps {
@@ -19,23 +22,69 @@ interface PaymentButtonProps {
 export default function PaymentButton({
   orderId,
   orderNumber,
-  paymentToken,
+  paymentToken: initialPaymentToken,
   paymentStatus,
   orderStatus,
 }: PaymentButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
+  const [paymentToken, setPaymentToken] = useState(initialPaymentToken);
   const router = useRouter();
 
-  const handlePayment = () => {
-    if (!paymentToken) {
-      toast.error('Payment token tidak tersedia');
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src =
+      process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true'
+        ? 'https://app.midtrans.com/snap/snap.js'
+        : 'https://app.sandbox.midtrans.com/snap/snap.js';
+    script.setAttribute(
+      'data-client-key',
+      process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY!
+    );
+    script.async = true;
+
+    const existingScript = document.querySelector(`script[src="${script.src}"]`);
+    if (!existingScript) {
+      document.body.appendChild(script);
+    }
+
+    return () => {
+      const scriptTag = document.querySelector(`script[src="${script.src}"]`);
+      if (scriptTag) {
+        // document.body.removeChild(scriptTag);
+      }
+    };
+  }, []);
+
+  const handlePayment = async () => {
+    setIsLoading(true);
+    let token = paymentToken;
+
+    if (!token) {
+      toast.info('Membuat token pembayaran...');
+      const result = await generatePaymentTokenAction(orderId);
+      if (result.error || !result.paymentToken) {
+        toast.error(result.error || 'Gagal membuat token pembayaran.');
+        setIsLoading(false);
+        return;
+      }
+      token = result.paymentToken;
+      setPaymentToken(token);
+    }
+
+    if (typeof window.snap === 'undefined') {
+      toast.error('Gagal memuat skrip pembayaran. Coba muat ulang halaman.');
+      setIsLoading(false);
       return;
     }
 
-    setIsLoading(true);
+    if (!token) {
+        toast.error('Token pembayaran tidak tersedia.');
+        setIsLoading(false);
+        return;
+    }
 
-    window.snap.pay(paymentToken, {
+    window.snap.pay(token, {
       onSuccess: async () => {
         toast.success('Pembayaran berhasil!');
         await checkStatus();
@@ -45,10 +94,13 @@ export default function PaymentButton({
         router.refresh();
       },
       onError: () => {
-        toast.error('Pembayaran gagal');
+        toast.error('Pembayaran gagal atau dibatalkan.');
         setIsLoading(false);
       },
       onClose: () => {
+        if (paymentStatus !== 'success') {
+          toast.info('Anda menutup pop-up pembayaran.');
+        }
         setIsLoading(false);
       },
     });
@@ -68,21 +120,6 @@ export default function PaymentButton({
     setIsChecking(false);
   };
 
-  if (typeof window !== 'undefined' && paymentToken) {
-    const script = document.createElement('script');
-    script.src =
-      process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true'
-        ? 'https://app.midtrans.com/snap/snap.js'
-        : 'https://app.sandbox.midtrans.com/snap/snap.js';
-    script.setAttribute(
-      'data-client-key',
-      process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY!
-    );
-    if (!document.querySelector(`script[src="${script.src}"]`)) {
-      document.body.appendChild(script);
-    }
-  }
-
   if (orderStatus !== 'pending_payment') {
     return null;
   }
@@ -91,7 +128,7 @@ export default function PaymentButton({
     <div className="flex gap-3">
       <Button
         onClick={handlePayment}
-        disabled={isLoading || !paymentToken}
+        disabled={isLoading || isChecking}
         className="flex-1"
         size="lg"
       >
@@ -110,7 +147,7 @@ export default function PaymentButton({
 
       <Button
         onClick={checkStatus}
-        disabled={isChecking}
+        disabled={isChecking || isLoading}
         variant="outline"
         size="lg"
       >
