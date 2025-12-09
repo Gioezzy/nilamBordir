@@ -1,0 +1,152 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+'use server';
+
+import { createClient } from '@/lib/supabase/server';
+import { cache } from 'react';
+
+export const getAdminAnalytics = cache(async () => {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user) {
+    return null;
+  }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+
+  if (!profile || profile.role !== 'admin') {
+    return null;
+  }
+
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+
+  const { data: revenueData } = await supabase
+    .from('orders')
+    .select('total_amount, created_at')
+    .in('status', ['paid', 'in_production', 'ready_for_pickup', 'completed']);
+
+  const totalRevenue = revenueData?.reduce((sum, order) => sum + order.total_amount, 0) || 0;
+  
+  const monthRevenue = revenueData
+    ?.filter(order => new Date(order.created_at) >= startOfMonth)
+    .reduce((sum, order) => sum + order.total_amount, 0) || 0;
+
+  const lastMonthRevenue = revenueData
+    ?.filter(order => {
+      const date = new Date(order.created_at);
+      return date >= startOfLastMonth && date <= endOfLastMonth;
+    })
+    .reduce((sum, order) => sum + order.total_amount, 0) || 0;
+
+  const revenueGrowth = lastMonthRevenue > 0 
+    ? ((monthRevenue - lastMonthRevenue) / lastMonthRevenue * 100).toFixed(1)
+    : 0;
+
+  const { count: totalOrders } = await supabase
+    .from('orders')
+    .select('*', { count: 'exact', head: true });
+
+  const { count: monthOrders } = await supabase
+    .from('orders')
+    .select('*', { count: 'exact', head: true })
+    .gte('created_at', startOfMonth.toISOString());
+
+  const { count: lastMonthOrders } = await supabase
+    .from('orders')
+    .select('*', { count: 'exact', head: true })
+    .gte('created_at', startOfLastMonth.toISOString())
+    .lte('created_at', endOfLastMonth.toISOString());
+
+  const ordersGrowth = lastMonthOrders && lastMonthOrders > 0
+    ? (((monthOrders || 0) - lastMonthOrders) / lastMonthOrders * 100).toFixed(1)
+    : 0;
+
+  const { count: totalCustomers } = await supabase
+    .from('profiles')
+    .select('*', { count: 'exact', head: true })
+    .eq('role', 'customer');
+
+  const { count: monthCustomers } = await supabase
+    .from('profiles')
+    .select('*', { count: 'exact', head: true })
+    .eq('role', 'customer')
+    .gte('created_at', startOfMonth.toISOString());
+
+  const { count: totalProducts } = await supabase
+    .from('products')
+    .select('*', { count: 'exact', head: true })
+    .eq('is_active', true);
+
+  const { data: orderItems } = await supabase
+    .from('order_items')
+    .select('product_id, quantity, products(name)');
+
+  const productSales = orderItems?.reduce((acc: any, item) => {
+    if (!item.product_id) return acc;
+    
+    if (!acc[item.product_id]) {
+      acc[item.product_id] = {
+        name: item.products?.[0]?.name || 'Unknown',
+        quantity: 0,
+      };
+    }
+    acc[item.product_id].quantity += item.quantity;
+    return acc;
+  }, {});
+
+  const topProducts = Object.values(productSales || {})
+    .sort((a: any, b: any) => b.quantity - a.quantity)
+    .slice(0, 5);
+
+  const { data: orders } = await supabase
+    .from('orders')
+    .select('status');
+
+  const statusBreakdown = orders?.reduce((acc: any, order) => {
+    acc[order.status] = (acc[order.status] || 0) + 1;
+    return acc;
+  }, {});
+
+  const { count: totalDesigns } = await supabase
+    .from('designs')
+    .select('*', { count: 'exact', head: true });
+
+  const { count: pendingDesigns } = await supabase
+    .from('designs')
+    .select('*', { count: 'exact', head: true })
+    .in('status', ['uploaded', 'reviewed']);
+
+  return {
+    revenue: {
+      total: totalRevenue,
+      month: monthRevenue,
+      growth: Number(revenueGrowth),
+    },
+    orders: {
+      total: totalOrders || 0,
+      month: monthOrders || 0,
+      growth: Number(ordersGrowth),
+    },
+    customers: {
+      total: totalCustomers || 0,
+      month: monthCustomers || 0,
+    },
+    products: {
+      total: totalProducts || 0,
+    },
+    designs: {
+      total: totalDesigns || 0,
+      pending: pendingDesigns || 0,
+    },
+    topProducts,
+    statusBreakdown,
+  };
+});
