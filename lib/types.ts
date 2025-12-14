@@ -43,20 +43,24 @@ export type TypedPayment = Payment & {
   midtrans_token: string | null;
 };
 
-export interface OrderWithDetails extends Order {
-  order_items: (TypedOrderItem & {
-    product: ProductWithTypedImages | null;
-    design: Design | null;
-  })[];
-  payment: TypedPayment[] | null;
+export interface AdminOrderItem extends TypedOrderItem {
+  products: ProductWithTypedImages | null;
+  designs: Design | null;
 }
 
-export interface AdminOrderItem extends OrderItem {
-  products: {
-    name: string;
-    sample_images: ProductImage[] | null;
+export interface OrderWithDetails extends Order {
+  profiles: {
+    full_name: string | null;
+    phone: string | null;
+    address: string | null;
   } | null;
-  designs: Design | null;
+
+  order_items: (TypedOrderItem & {
+    products: ProductWithTypedImages | null;
+    designs: Design | null;
+  })[];
+
+  payment: TypedPayment[] | null;
 }
 
 export interface CartItem {

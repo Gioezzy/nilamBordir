@@ -21,6 +21,16 @@ export interface CreateOrderInput {
   phone?: string
 }
 
+export interface CreateOrderFromDesignInput {
+  designId: string
+  productId?: string
+  quantity: number
+  pickupMethod: 'in_store' | 'delivery'
+  note?: string
+  address?: string
+  phone?: string
+}
+
 export async function createOrderAction(input: CreateOrderInput){
   const supabase = await createClient()
 
@@ -125,6 +135,143 @@ export async function createOrderAction(input: CreateOrderInput){
   }
 }
 
+export async function createOrderFromDesignAction(input: CreateOrderFromDesignInput) {
+  const supabase = await createClient()
+
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+  if (authError || !user ) {
+    return { error: 'Unauthorized. Please login first.' }
+  }
+
+  const { data: design, error: designError } = await supabase
+    .from('designs')
+    .select('*, categories(name)')
+    .eq('id', input.designId)
+    .eq('user_id', user.id)
+    .single()
+
+  if (designError || !design ) {
+    return { error: 'Design not found' }
+  }
+
+  if (design.status !== 'approved') {
+    return { error: 'Design belum disetujui. Harap tunggu approval dari admin.'}
+  }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single()
+
+  if (!profile) {
+    return { error: 'Profile not found'}
+  }
+
+  let customization
+  let unitPrice = 0
+
+  try {
+    const parsedNotes = JSON.parse(design.custom_notes || '{}')
+    customization = parsedNotes.customization || parsedNotes
+    unitPrice = customization.totalPrice || 0
+  } catch (e) {
+    console.error('Error parsing custom notes: ', e)
+    return { error: 'Invalid design data' }
+  }
+
+  if (unitPrice <= 0) {
+    return { error: 'Harga design tidak valid' }
+  }
+
+  const totalAmount = unitPrice * input.quantity
+  const orderNumber = generateOrderNumber()
+
+  const { data: order, error: orderError } = await supabase
+    .from('orders')
+    .insert({
+      order_number: orderNumber,
+      user_id: user.id,
+      total_amount: totalAmount,
+      status: 'pending_payment',
+      pickup_method: input.pickupMethod,
+      note: input.note
+    })
+    .select()
+    .single()
+
+  if (orderError) {
+    console.error('Order creation error:', orderError)
+    return { error: 'Failed to create order' }
+  }
+
+  const { error: itemError } = await supabase
+    .from('order_items')
+    .insert({
+      order_id: order.id,
+      product_id: input.productId || null,
+      design_id: input.designId,
+      custom: true,
+      custom_description: `Custom Design: ${design.categories?.name || 'Custom'}`,
+      product_snapshot: {
+        name: `Custom Design - ${design.categories?.name || 'Custom'}`,
+        price: unitPrice
+      },
+      quantity: input.quantity,
+      unit_price: unitPrice,
+      line_total: totalAmount,
+    })
+
+  if (itemError) {
+    console.error('Order item error:', itemError)
+    return { error: 'Failed to create order items' }
+  }
+
+  await supabase.from('notifications').insert({
+      user_id: user.id,
+      type: 'order',
+      title: 'Pesanan Berhasil Dibuat',
+      message: `Pesanan ${orderNumber} berhasil dibuat. Silakan lakukan pembayaran.`,
+      related_id: orderNumber,
+    });
+
+  await supabase
+    .from('designs')
+    .update({ order_id: order.id })
+    .eq('id', input.designId)
+
+  const paymentResult = await createMidtransTransaction({
+    orderId: orderNumber,
+    amount: totalAmount,
+    customerDetails: {
+      firstName: profile.full_name || 'Customer',
+      email: user.email!,
+      phone: input.phone || profile.phone || '08123456789',
+    },
+    itemDetails : [{
+      id: input.designId,
+      name: `Custom Design - ${design.categories?.name || 'Custom'}`,
+      price: unitPrice,
+      quantity: input.quantity,
+    }]
+  })
+
+  if (!paymentResult.success || !paymentResult.token) {
+    return { error: 'Failed to create payment' }
+  }
+
+  await supabase.from('payments').insert({
+    order_id: order.id,
+    midtrans_order_id: orderNumber,
+    amount: totalAmount,
+    status: 'pending',
+    midtrans_token: paymentResult.token,
+  })
+
+  redirect(`/orders/${order.id}`)
+}
+
 export const getUserOrders = cache(async (filters?: {
   status?: string
   search?: string
@@ -186,34 +333,30 @@ export const getOrderById = cache(async (orderId: string): Promise<OrderWithDeta
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
-
-  if(!user){
-    return null
-  }
+  if (!user) return null
 
   const { data, error } = await supabase
     .from('orders')
     .select(`
       *,
+      profiles(full_name, phone, address),
       order_items (
         *,
-        product:products (*),
-        design:designs (*)
+        products:products(*),
+        designs:designs(*)
       ),
-      payment:payments (
-        *
-      )
+      payment:payments(*)
     `)
     .eq('id', orderId)
     .eq('user_id', user.id)
     .single()
 
-  if(error){
+  if (error) {
     console.error('Error fetching order:', error)
     return null
   }
 
-  return data as OrderWithDetails | null
+  return data as OrderWithDetails
 })
 
 export const getUserOrderStats = cache(async () => {
