@@ -1,5 +1,5 @@
-import { updateSession } from './lib/supabase/middleware';
-import { NextRequest, NextResponse } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
 
 /**
  * Middleware for handling authentication and authorization
@@ -7,90 +7,72 @@ import { NextRequest, NextResponse } from 'next/server';
  * @returns A NextResponse object with the updated session information.
  */
 export async function middleware(request: NextRequest) {
-  const { response, user, supabase } = await updateSession(request);
-  const { pathname } = request.nextUrl;
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
 
-  if (pathname.startsWith('/auth/callback')){
-    return response;
-  }
-
-  const isAuthRoute =
-    pathname.startsWith('/login') ||
-    pathname.startsWith('/register') ||
-    pathname.startsWith('/forgot-password') ||
-    pathname.startsWith('/reset-password');
-
-  const isAdminRoute = pathname.startsWith('/admin');
-
-  const isProtectedRoute =
-    pathname.startsWith('/dashboard') ||
-    pathname.startsWith('/orders') ||
-    pathname.startsWith('/profile') ||
-    pathname.startsWith('/upload-design') ||
-    pathname.startsWith('/checkout');
-
-  // ======================================
-  // 1. Handle Unauthenticated Users
-  // ======================================
-  if (!user) {
-    if (isAdminRoute || isProtectedRoute) {
-      const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('redirect', pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-
-    return response;
-  }
-
-  // ======================================
-  // 2. Handle Authenticated Users
-  // ======================================
-
-  if (isAuthRoute) {
-    const role = (request.cookies.get('user_role')?.value || '').toLowerCase();
-
-    return NextResponse.redirect(
-      new URL(role === 'admin' ? '/admin' : '/dashboard', request.url)
-    );
-  }
-
-  // ======================================
-  // 3. Handle Admin Routes
-  // ======================================
-  if (isAdminRoute) {
-    let role = request.cookies.get('user_role')?.value;
-
-    if (!role) {
-      try {
-        const { data: profile, error } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', user.id)
-          .single();
-
-        if (error) {
-          console.error('Error fetching user role:', error);
-          return NextResponse.redirect(new URL('/dashboard', request.url));
-        }
-
-        role = profile?.role;
-
-        if (role) {
-          response.cookies.set('user_role', role, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 60 * 10, 
-            sameSite: 'lax',
-            path: '/',
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          );
+          response = NextResponse.next({
+            request,
           });
-        }
-      } catch (error) {
-        console.error('Middleware error:', error);
-        return NextResponse.redirect(new URL('/dashboard', request.url));
-      }
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          );
+        },
+      },
+    }
+  );
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const protectedPaths = [
+    '/dashboard',
+    '/orders',
+    '/profile',
+    '/designs',
+    '/upload-design',
+    '/checkout',
+  ];
+
+  const adminPaths = ['/admin'];
+
+  const path = request.nextUrl.pathname;
+
+  if (protectedPaths.some(p => path.startsWith(p))) {
+    if (!user) {
+      const redirectUrl = new URL('/login', request.url);
+      redirectUrl.searchParams.set('redirect', path);
+      return NextResponse.redirect(redirectUrl);
+    }
+  }
+
+  if (adminPaths.some(p => path.startsWith(p))) {
+    if (!user) {
+      return NextResponse.redirect(new URL('/login', request.url));
     }
 
-    if (role !== 'admin') {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (!profile || profile.role !== 'admin') {
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }
   }

@@ -13,6 +13,7 @@ import {
   AlertCircle,
   CheckCircle,
 } from 'lucide-react';
+import DesignCheckoutButton from '@/components/design/design-checkout-button';
 
 export const metadata = {
   title: 'Detail Design - Nilam Bordir',
@@ -183,11 +184,10 @@ export default async function UserDesignDetailPage({
           )}
 
           {design.status === 'approved' && (
-            <Link href="/shop" className="block">
-              <Button className="w-full" size="lg">
-                Lanjut ke Pemesanan
-              </Button>
-            </Link>
+            <DesignCheckoutButton 
+              designId={design.id} 
+              designStatus={design.status}
+            />
           )}
 
           {design.status === 'rejected' && (
