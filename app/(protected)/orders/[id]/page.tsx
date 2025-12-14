@@ -74,10 +74,10 @@ export default async function OrderDetailPage({
               className="flex gap-4 pb-4 border-b last:border-0"
             >
               <div className="w-20 h-20 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
-                {item.product?.sample_images?.[0]?.url ? (
+                {item.products?.sample_images?.[0]?.url ? (
                   <Image
-                    src={item.product.sample_images[0].url}
-                    alt={item.product.name}
+                    src={item.products.sample_images[0].url}
+                    alt={item.products.name}
                     width={80}
                     height={80}
                     className="object-cover w-full h-full"
@@ -88,12 +88,12 @@ export default async function OrderDetailPage({
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold text-gray-900">
-                  {item.product?.name || item.product_snapshot?.name}
+                  {item.products?.name || item.product_snapshot?.name}
                 </h3>
                 <p className="text-sm text-gray-600 mt-1">
                   {formatRupiah(item.unit_price)} x {item.quantity}
                 </p>
-                {item.design && (
+                {item.designs && (
                   <p className="text-sm text-blue-600 mt-1">
                     Dengan desain custom
                   </p>
