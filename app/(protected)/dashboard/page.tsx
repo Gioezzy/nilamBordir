@@ -5,6 +5,7 @@ import RecentOrders from '@/components/dashboard/recert-orders';
 import { ShoppingBag, Clock, Package, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import DashboardQuickActions from '@/components/dashboard/dashboard-quick-actions';
 
 export const metadata = {
   title: 'Dashboard - Nilam Bordir',
@@ -29,48 +30,35 @@ export default async function DashboardPage() {
         <StatsCard
           title="Total Pesanan"
           value={stats.total}
-          icon={ShoppingBag}
+          icon={<ShoppingBag className="w-6 h-6" />} // ⬅️ FIX
           iconColor="text-blue-600"
         />
+
         <StatsCard
           title="Menunggu Pembayaran"
           value={stats.pending}
-          icon={Clock}
+          icon={<Clock className="w-6 h-6" />} // ⬅️ FIX
           iconColor="text-yellow-600"
         />
+
         <StatsCard
           title="Sedang Diproses"
           value={stats.inProduction}
-          icon={Package}
+          icon={<Package className="w-6 h-6" />} // ⬅️ FIX
           iconColor="text-purple-600"
         />
+
         <StatsCard
           title="Selesai"
           value={stats.completed}
-          icon={CheckCircle}
+          icon={<CheckCircle className="w-6 h-6" />} // ⬅️ FIX
           iconColor="text-green-600"
         />
       </div>
 
       <div className="bg-white rounded-lg border p-6">
         <h2 className="text-xl font-semibold mb-4">Aksi Cepat</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Link href="/shop">
-            <Button variant="outline" className="w-full">
-              Mulai Belanja
-            </Button>
-          </Link>
-          <Link href="/orders">
-            <Button variant="outline" className="w-full">
-              Lihat Semua Pesanan
-            </Button>
-          </Link>
-          <Link href="/upload-design">
-            <Button variant="outline" className="w-full">
-              Upload Desain
-            </Button>
-          </Link>
-        </div>
+        <DashboardQuickActions />
       </div>
 
       <div className="bg-white rounded-lg border p-6">
