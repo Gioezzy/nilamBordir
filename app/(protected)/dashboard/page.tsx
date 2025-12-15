@@ -65,11 +65,11 @@ export default async function DashboardPage() {
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold">Pesanan Terbaru</h2>
           {orders.length > 0 && (
-            <Link href="/orders">
-              <Button variant="link" className="text-sm">
+            <Button variant="link" className="text-sm" asChild>
+              <Link href="/orders">
                 Lihat Semua
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           )}
         </div>
         <RecentOrders orders={orders} />
