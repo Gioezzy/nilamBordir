@@ -85,9 +85,9 @@ export default function AboutPage() {
             </p>
 
             <div className="mt-10 text-center">
-              <Link href="/shop">
-                <Button size="lg">Mulai Pesanan Kustom Anda Sekarang!</Button>
-              </Link>
+              <Button size="lg" asChild>
+                <Link href="/shop">Mulai Pesanan Kustom Anda Sekarang!</Link>
+              </Button>
             </div>
           </div>
         </div>
