@@ -19,9 +19,9 @@ export default async function HomePage() {
         <section className="max-w-7xl mx-auto px-4 py-16">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold">Produk Terbaru</h2>
-            <Link href="/shop">
-              <Button variant="outline">Lihat Semua</Button>
-            </Link>
+            <Button variant="outline" asChild>
+              <Link href="/shop">Lihat Semua</Link>
+            </Button>
           </div>
           <ProductGrid products={featuredProducts} />
         </section>
@@ -36,11 +36,11 @@ export default async function HomePage() {
             Upload desain custom Anda dan kami akan mewujudkannya menjadi bordir
             berkualitas tinggi dengan detail sempurna.
           </p>
-          <Link href="/upload-design">
-            <Button size="lg" variant="secondary" className="text-lg px-8">
+          <Button size="lg" variant="secondary" className="text-lg px-8" asChild>
+            <Link href="/upload-design">
               Upload Desain Custom
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </section>
     </div>
