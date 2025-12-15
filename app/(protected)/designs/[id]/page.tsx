@@ -59,12 +59,12 @@ export default async function UserDesignDetailPage({
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
-      <Link href="/designs">
-        <Button variant="ghost">
+      <Button variant="ghost" asChild>
+        <Link href="/designs">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Kembali ke Daftar Design
-        </Button>
-      </Link>
+        </Link>
+      </Button>
 
       {design.status === 'approved' && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
@@ -191,11 +191,11 @@ export default async function UserDesignDetailPage({
           )}
 
           {design.status === 'rejected' && (
-            <Link href="/upload-design" className="block">
-              <Button className="w-full" size="lg">
+            <Button className="w-full" size="lg" asChild>
+              <Link href="/upload-design">
                 Upload Design Baru
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           )}
         </div>
       </div>
