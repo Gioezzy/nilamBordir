@@ -29,11 +29,11 @@ export default function AdminError({
           <Button onClick={reset} className="w-full">
             Coba Lagi
           </Button>
-          <Link href="/admin">
-            <Button variant="outline" className="w-full">
+          <Button variant="outline" className="w-full" asChild>
+            <Link href="/admin">
               Kembali ke Dashboard
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </div>
     </div>
