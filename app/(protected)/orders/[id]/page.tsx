@@ -1,5 +1,5 @@
 import { getOrderById } from '@/lib/actions/order';
-import { formatRupiah, formatDate } from '@/lib/utils';
+import { formatRupiah, formatDate, getProductImage } from '@/lib/utils';
 import OrderStatusBadge from '@/components/dashboard/order-status-badge';
 import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
@@ -11,6 +11,7 @@ import PaymentButton from '@/components/orders/payment-button';
 import PaymentNotification from '@/components/orders/payment-notification';
 import OrderTrackingTimeline from '@/components/orders/order-tracking-timeline';
 import { notFound } from 'next/navigation';
+import DesignPreviewWrapper from '@/components/orders/design-preview-wrapper';
 
 export const metadata = {
   title: 'Detail Pesanan - Nilam Bordir',
@@ -42,7 +43,10 @@ export default async function OrderDetailPage({
         </Button>
       </Link>
 
-      <PaymentNotification orderId={order.id} currentStatus={order.status || 'unknown'} />
+      <PaymentNotification
+        orderId={order.id}
+        currentStatus={order.status || 'unknown'}
+      />
 
       <div className="bg-white rounded-lg border p-6">
         <div className="flex items-start justify-between mb-4">
@@ -68,44 +72,53 @@ export default async function OrderDetailPage({
           Item Pesanan
         </h2>
         <div className="space-y-4">
-          {order.order_items?.map(item => (
-            <div
-              key={item.id}
-              className="flex gap-4 pb-4 border-b last:border-0"
-            >
-              <div className="w-20 h-20 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
-                {item.products?.sample_images?.[0]?.url ? (
+          {order.order_items?.map(item => {
+            const imageUrl =
+              item.custom && item.designs?.file_url
+                ? item.designs.file_url
+                : item.products?.sample_images
+                ? getProductImage(item.products.sample_images)
+                : '/images/placeholder-product.png';
+
+            return (
+              <div
+                key={item.id}
+                className="flex gap-4 pb-4 border-b last:border-0"
+              >
+                <div className="w-20 h-20 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden relative">
                   <Image
-                    src={item.products.sample_images[0].url}
-                    alt={item.products.name}
-                    width={80}
-                    height={80}
-                    className="object-cover w-full h-full"
+                    src={imageUrl}
+                    alt={
+                      item.products?.name ||
+                      item.product_snapshot?.name ||
+                      'Product'
+                    }
+                    fill
+                    className="object-cover"
                   />
-                ) : (
-                  <div className="w-full h-full bg-gray-200" />
-                )}
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900">
-                  {item.products?.name || item.product_snapshot?.name}
-                </h3>
-                <p className="text-sm text-gray-600 mt-1">
-                  {formatRupiah(item.unit_price)} x {item.quantity}
-                </p>
-                {item.designs && (
-                  <p className="text-sm text-blue-600 mt-1">
-                    Dengan desain custom
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900">
+                    {item.products?.name || item.product_snapshot?.name}
+                  </h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {formatRupiah(item.unit_price)} x {item.quantity}
                   </p>
-                )}
+                  {item.designs && (
+                    <div className="mt-2 text-sm text-blue-600">
+                      <p className="mb-2">Dengan desain custom</p>
+                      <DesignPreviewWrapper item={item} />
+                    </div>
+                  )}
+                </div>
+                <div className="text-right">
+                  <p className="font-bold text-gray-900">
+                    {formatRupiah(item.line_total)}
+                  </p>
+                </div>
               </div>
-              <div className="text-right">
-                <p className="font-bold text-gray-900">
-                  {formatRupiah(item.line_total)}
-                </p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -133,35 +146,65 @@ export default async function OrderDetailPage({
       </div>
 
       <div className="bg-white rounded-lg border p-6">
-        <OrderTrackingTimeline order={{
-          status: order.status || 'unknown',
-          created_at: order.created_at || new Date().toISOString(),
-          updated_at: order.updated_at || new Date().toISOString(),
-          payment: order.payment?.map(p => ({
-            created_at: p.created_at || new Date().toISOString(),
-            status: p.status || 'unknown',
-          })) || undefined,
-        }} />
+        <OrderTrackingTimeline
+          order={{
+            status: order.status || 'unknown',
+            created_at: order.created_at || new Date().toISOString(),
+            updated_at: order.updated_at || new Date().toISOString(),
+            payment:
+              order.payment?.map(p => ({
+                created_at: p.created_at || new Date().toISOString(),
+                status: p.status || 'unknown',
+              })) || undefined,
+          }}
+        />
       </div>
 
       <div className="bg-white rounded-lg border p-6">
         <h2 className="text-lg font-semibold mb-4 flex items-center">
           <MapPin className="w-5 h-5 mr-2" />
-          Informasi Pengambilan
+          Informasi Pengambilan & Kontak
         </h2>
-        <div className="space-y-2 text-gray-600">
-          <p>
-            <span className="font-medium">Metode:</span>{' '}
-            {order.pickup_method === 'in_store'
-              ? 'Ambil di Toko'
-              : 'Pengiriman'}
-          </p>
-          {order.pickup_date && (
-            <p>
-              <span className="font-medium">Estimasi Siap:</span>{' '}
-              {formatDate(order.pickup_date)}
+        <div className="space-y-3 text-gray-600">
+          <div>
+            <p className="text-sm text-gray-600">Metode</p>
+            <p className="font-medium text-gray-900">
+              {order.pickup_method === 'in_store'
+                ? 'Ambil di Toko'
+                : 'Pengiriman'}
             </p>
+          </div>
+
+          {order.pickup_method === 'delivery' && (
+            <>
+              {order.profiles?.phone && (
+                <div>
+                  <p className="text-sm text-gray-600">Nomor Telepon</p>
+                  <p className="font-medium text-gray-900">
+                    {order.profiles.phone}
+                  </p>
+                </div>
+              )}
+              {order.profiles?.address && (
+                <div>
+                  <p className="text-sm text-gray-600">Alamat Pengiriman</p>
+                  <p className="font-medium text-gray-900 text-sm">
+                    {order.profiles.address}
+                  </p>
+                </div>
+              )}
+            </>
           )}
+
+          {order.pickup_date && (
+            <div>
+              <p className="text-sm text-gray-600">Estimasi Siap</p>
+              <p className="font-medium text-gray-900">
+                {formatDate(order.pickup_date)}
+              </p>
+            </div>
+          )}
+
           {order.note && (
             <div className="mt-4 p-4 bg-gray-50 rounded-lg">
               <p className="font-medium text-gray-900 mb-1">Catatan:</p>
