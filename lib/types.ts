@@ -45,7 +45,7 @@ export type TypedPayment = Payment & {
 
 export interface AdminOrderItem extends TypedOrderItem {
   products: ProductWithTypedImages | null;
-  designs: Design | null;
+  designs: (Design & { categories: Category | null }) | null;
 }
 
 export interface OrderWithDetails extends Order {
@@ -57,7 +57,7 @@ export interface OrderWithDetails extends Order {
 
   order_items: (TypedOrderItem & {
     products: ProductWithTypedImages | null;
-    designs: Design | null;
+    designs: (Design & { categories: Category | null }) | null;
   })[];
 
   payment: TypedPayment[] | null;
