@@ -9,6 +9,7 @@ import { ChevronLeft, MapPin, CreditCard, Package, User } from 'lucide-react';
 import OrderStatusUpdateForm from '@/components/admin/order-status-update-form';
 import { AdminOrderItem } from '@/lib/types';
 import { notFound } from 'next/navigation';
+import DesignPreviewWrapper from '@/components/orders/design-preview-wrapper';
 
 export const metadata = {
   title: 'Detail Pesanan - Admin',
@@ -30,7 +31,6 @@ export default async function AdminOrderDetailPage({
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
-      {/* Back Button */}
       <Link href="/admin/orders">
         <Button variant="ghost" className="mb-4">
           <ChevronLeft className="w-4 h-4 mr-2" />
@@ -38,7 +38,6 @@ export default async function AdminOrderDetailPage({
         </Button>
       </Link>
 
-      {/* Order Header */}
       <div className="bg-white rounded-lg border p-6">
         <div className="flex items-start justify-between mb-4">
           <div>
@@ -57,7 +56,6 @@ export default async function AdminOrderDetailPage({
         </div>
       </div>
 
-      {/* Items */}
       <div className="bg-white rounded-lg border p-6">
         <h2 className="text-lg font-semibold mb-4 flex items-center">
           <Package className="w-5 h-5 mr-2" />
@@ -71,7 +69,19 @@ export default async function AdminOrderDetailPage({
               className="flex gap-4 pb-4 border-b last:border-0"
             >
               <div className="w-20 h-20 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
-                {item.products?.sample_images?.[0]?.url ? (
+                {item.custom && item.designs?.file_url ? (
+                  <Image
+                    src={item.designs.file_url}
+                    alt={
+                      item.products?.name ||
+                      item.product_snapshot?.name ||
+                      'Product'
+                    }
+                    width={80}
+                    height={80}
+                    className="object-cover w-full h-full"
+                  />
+                ) : item.products?.sample_images?.[0]?.url ? (
                   <Image
                     src={item.products.sample_images[0].url}
                     alt={item.products.name}
@@ -108,6 +118,54 @@ export default async function AdminOrderDetailPage({
           ))}
         </div>
       </div>
+
+      {order.order_items?.some((item: AdminOrderItem) => item.designs) && (
+        <div className="bg-white rounded-lg border p-6">
+          <h2 className="text-lg font-semibold mb-4 flex items-center">
+            <Package className="w-5 h-5 mr-2" />
+            Preview Desain User
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {order.order_items
+              .filter((item: AdminOrderItem) => item.designs)
+              .map((item: AdminOrderItem) => (
+                <div key={item.id} className="border rounded-lg p-4">
+                  <h3 className="font-medium mb-3">
+                    {item.products?.name || item.product_snapshot?.name}
+                  </h3>
+                  <div className="aspect-video relative bg-gray-100 rounded-lg overflow-hidden border">
+                    {item.designs?.file_url ? (
+                      <Image
+                        src={item.designs.file_url}
+                        alt="User Design"
+                        fill
+                        className="object-contain"
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-gray-400">
+                        No Preview Available
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-3 text-sm text-gray-600">
+
+                    <p>
+                      <span className="font-medium">Kategori:</span>{' '}
+                      {item.designs?.categories?.name || '-'}
+                    </p>
+                    {item.designs?.custom_notes && (
+                      <div className="mt-4">
+                        <DesignPreviewWrapper
+                          item={item}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
 
       {/* Ringkasan */}
       <div className="bg-white rounded-lg border p-6">
