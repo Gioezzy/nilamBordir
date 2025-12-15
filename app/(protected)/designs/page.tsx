@@ -37,12 +37,12 @@ export default async function UserDesignsPage() {
             Kelola dan track status design upload Anda
           </p>
         </div>
-        <Link href="/upload-design">
-          <Button size="lg">
+        <Button size="lg" asChild>
+          <Link href="/upload-design">
             <Upload className="w-5 h-5 mr-2" />
             Upload Design Baru
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       {!designs || designs.length === 0 ? (
@@ -55,12 +55,12 @@ export default async function UserDesignsPage() {
             Upload design custom Anda sekarang dan dapatkan approval dari tim
             kami
           </p>
-          <Link href="/upload-design">
-            <Button>
+          <Button asChild>
+            <Link href="/upload-design">
               <Upload className="w-5 h-5 mr-2" />
               Upload Design Pertama
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
