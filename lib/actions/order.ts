@@ -31,29 +31,60 @@ export interface CreateOrderFromDesignInput {
   phone?: string
 }
 
-export async function createOrderAction(input: CreateOrderInput){
+export async function createOrderAction(input: CreateOrderInput) {
   const supabase = await createClient()
 
-  const { data: { user }, error: authError} = await supabase.auth.getUser()
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-  if (authError || !user){
-    return { error: 'Unauthorized. Please login first.'}
+  if (authError || !user) {
+    return { error: 'Unauthorized. Please login first.' }
   }
 
-  const { data: profile} = await supabase
+  const { data: profile } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
     .single()
 
-  if(!profile) {
-    return {error: 'Profile not found'}
+  if (!profile) {
+    return { error: 'Profile not found' }
   }
 
-  const totalAmount = input.items.reduce(
-    (sum, item) => sum + item.unitPrice * item.quantity,
-    0
-  )
+  const productIds = input.items.map(item => item.productId)
+  
+  const { data: dbProducts, error: productsError } = await supabase
+    .from('products')
+    .select('id, name, price, sample_images')
+    .in('id', productIds)
+
+  if (productsError || !dbProducts) {
+    console.error('Error fetching products:', productsError)
+    return { error: 'Failed to validate products' }
+  }
+
+  const productMap = new Map(dbProducts.map(p => [p.id, p]))
+
+  let totalAmount = 0
+  const validatedItems = []
+
+  for (const item of input.items) {
+    const dbProduct = productMap.get(item.productId)
+    
+    if (!dbProduct) {
+      return { error: `Product not found: ${item.productName}` }
+    }
+
+    const itemTotal = dbProduct.price * item.quantity
+    totalAmount += itemTotal
+
+    validatedItems.push({
+      productId: dbProduct.id,
+      productName: dbProduct.name,
+      unitPrice: dbProduct.price, 
+      quantity: item.quantity,
+      lineTotal: itemTotal
+    })
+  }
 
   const orderNumber = generateOrderNumber()
 
@@ -70,12 +101,12 @@ export async function createOrderAction(input: CreateOrderInput){
     .select()
     .single()
 
-  if(orderError){
+  if (orderError) {
     console.error('Order creation error:', orderError)
-    return { error: 'Failed to create order'}
+    return { error: 'Failed to create order' }
   }
 
-  const orderItems = input.items.map(item => ({
+  const orderItemsData = validatedItems.map(item => ({
     order_id: order.id,
     product_id: item.productId,
     product_snapshot: {
@@ -84,16 +115,17 @@ export async function createOrderAction(input: CreateOrderInput){
     },
     quantity: item.quantity,
     unit_price: item.unitPrice,
-    line_total: item.unitPrice * item.quantity,
+    line_total: item.lineTotal,
   }))
 
-  const { error: itemsError } =  await supabase
+  const { error: itemsError } = await supabase
     .from('order_items')
-    .insert(orderItems)
-  
-  if(itemsError){
+    .insert(orderItemsData)
+
+  if (itemsError) {
     console.error('Order items error:', itemsError)
-    return { error: 'Failed to craete order items' }
+    await supabase.from('orders').delete().eq('id', order.id)
+    return { error: 'Failed to create order items' }
   }
 
   const paymentResult = await createMidtransTransaction({
@@ -104,7 +136,7 @@ export async function createOrderAction(input: CreateOrderInput){
       email: user.email!,
       phone: input.phone || profile.phone || '08123456789',
     },
-    itemDetails: input.items.map(item => ({
+    itemDetails: validatedItems.map(item => ({
       id: item.productId,
       name: item.productName,
       price: item.unitPrice,
@@ -113,7 +145,8 @@ export async function createOrderAction(input: CreateOrderInput){
   })
 
   if (!paymentResult.success || !paymentResult.token) {
-    return { error: 'Failed to create payment'}
+    await supabase.from('orders').delete().eq('id', order.id)
+    return { error: 'Failed to create payment. Please try again.' }
   }
 
   await supabase.from('payments').insert({
@@ -124,11 +157,11 @@ export async function createOrderAction(input: CreateOrderInput){
     midtrans_token: paymentResult.token,
   })
 
-  if (paymentResult.redirectUrl){
+  if (paymentResult.redirectUrl) {
     redirect(paymentResult.redirectUrl)
   }
 
-  return{
+  return {
     success: true,
     orderId: order.id,
     paymentToken: paymentResult.token,
@@ -258,6 +291,7 @@ export async function createOrderFromDesignAction(input: CreateOrderFromDesignIn
   })
 
   if (!paymentResult.success || !paymentResult.token) {
+    await supabase.from('orders').delete().eq('id', order.id)
     return { error: 'Failed to create payment' }
   }
 
@@ -343,7 +377,10 @@ export const getOrderById = cache(async (orderId: string): Promise<OrderWithDeta
       order_items (
         *,
         products:products(*),
-        designs:designs(*)
+        designs:designs(
+          *,
+          categories(*)
+        )
       ),
       payment:payments(*)
     `)
