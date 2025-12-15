@@ -51,12 +51,12 @@ export default function Error({
             Coba Lagi
           </Button>
 
-          <Link href="/" className="w-full sm:w-auto">
-            <Button variant="outline" size="lg" className="w-full">
+          <Button variant="outline" size="lg" className="w-full sm:w-auto" asChild>
+            <Link href="/">
               <Home className="w-5 h-5 mr-2" />
               Kembali ke Beranda
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
 
         <div className="mt-12 pt-8 border-t">
