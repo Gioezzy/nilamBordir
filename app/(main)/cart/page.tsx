@@ -19,9 +19,9 @@ export default function CartPage() {
           <p className="text-gray-600">
             Belum ada produk di keranjang Anda. Yuk, mulai belanja!
           </p>
-          <Link href="/">
-            <Button size="lg">Mulai Belanja</Button>
-          </Link>
+          <Button size="lg" asChild>
+            <Link href="/">Mulai Belanja</Link>
+          </Button>
         </div>
       </div>
     );
@@ -42,11 +42,11 @@ export default function CartPage() {
               </div>
             </div>
 
-            <Link href="/">
-              <Button variant="outline" className="mt-4">
+            <Button variant="outline" className="mt-4" asChild>
+              <Link href="/">
                 ← Lanjut Belanja
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
 
           <div className="lg:col-span-1">
