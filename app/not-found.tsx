@@ -1,3 +1,5 @@
+'use client';
+
 import { ArrowLeftIcon, Home } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -29,12 +31,12 @@ export default function NotFound() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/">
-              <Button size="lg" className="w-full sm:w-auto">
+            <Button size="lg" className="w-full sm:w-auto" asChild>
+              <Link href="/">
                 <Home className="w-5 h-5 mr-2" />
                 Kembali ke Beranda
-              </Button>
-            </Link>
+              </Link>
+            </Button>
             <Button
               variant="outline"
               size="lg"
