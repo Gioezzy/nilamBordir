@@ -12,6 +12,7 @@ import {
   Info,
   Bell,
 } from 'lucide-react';
+import { ORDER_STATUS_LABELS } from '@/lib/constans';
 import { toast } from 'sonner';
 
 interface NotificationListProps {
@@ -96,7 +97,15 @@ export default function NotificationList({
                   {notification.title}
                 </p>
                 <p className="text-sm text-gray-600 mt-1">
-                  {notification.message}
+                  {(() => {
+                    let formattedMessage = notification.message;
+                    Object.entries(ORDER_STATUS_LABELS).forEach(([key, label]) => {
+                      if (formattedMessage.includes(key)) {
+                        formattedMessage = formattedMessage.replace(key, label);
+                      }
+                    });
+                    return formattedMessage;
+                  })()}
                 </p>
                 <p className="text-xs text-gray-500 mt-2">
                   {formatDateTime(notification.created_at)}
