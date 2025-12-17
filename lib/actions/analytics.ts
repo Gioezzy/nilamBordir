@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
@@ -89,12 +88,22 @@ export const getAdminAnalytics = cache(async () => {
     .from('order_items')
     .select('product_id, quantity, products(name)');
 
-  const productSales = orderItems?.reduce((acc: any, item) => {
+  interface ProductSales {
+    [key: string]: {
+      name: string;
+      quantity: number;
+    };
+  }
+
+  const productSales = orderItems?.reduce<ProductSales>((acc, item) => {
     if (!item.product_id) return acc;
     
     if (!acc[item.product_id]) {
+      const products = item.products as unknown as { name: string } | null;
+      const productsName = products?.name || 'Unknown';
+
       acc[item.product_id] = {
-        name: item.products?.[0]?.name || 'Unknown',
+        name: productsName,
         quantity: 0,
       };
     }
@@ -103,14 +112,14 @@ export const getAdminAnalytics = cache(async () => {
   }, {});
 
   const topProducts = Object.values(productSales || {})
-    .sort((a: any, b: any) => b.quantity - a.quantity)
+    .sort((a, b) => b.quantity - a.quantity)
     .slice(0, 5);
 
   const { data: orders } = await supabase
     .from('orders')
     .select('status');
 
-  const statusBreakdown = orders?.reduce((acc: any, order) => {
+  const statusBreakdown = orders?.reduce<Record<string, number>>((acc, order) => {
     acc[order.status] = (acc[order.status] || 0) + 1;
     return acc;
   }, {});
