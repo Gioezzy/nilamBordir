@@ -5,44 +5,64 @@ import { getFeaturedProducts } from '@/lib/actions/product';
 import ProductGrid from '@/components/product/product-grid';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import FadeIn from '@/components/animations/fade-in';
 
 export default async function HomePage() {
   const featuredProducts = await getFeaturedProducts(8);
 
   return (
-    <div className="bg-gray-50">
+    <div className="min-h-screen bg-background">
       <HeroSection />
 
-      <CategoryShowcase />
+      <FadeIn delay={0.2}>
+        <CategoryShowcase />
+      </FadeIn>
 
       {featuredProducts.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 py-16">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold">Produk Terbaru</h2>
-            <Button variant="outline" asChild>
-              <Link href="/shop">Lihat Semua</Link>
+        <FadeIn delay={0.3} className="max-w-7xl mx-auto px-4 py-20">
+          <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-4">
+             <div>
+              <span className="text-secondary font-medium tracking-wider text-sm uppercase block mb-2">Katalog Terbaru</span>
+              <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground">Produk Unggulan</h2>
+            </div>
+            <Button variant="outline" className="rounded-full border-primary/20 hover:bg-primary/5 hover:text-primary" asChild>
+              <Link href="/shop" className="group">
+                Lihat Semua <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
+              </Link>
             </Button>
           </div>
           <ProductGrid products={featuredProducts} />
-        </section>
+        </FadeIn>
       )}
 
-      <HowItWorks />
+      <FadeIn delay={0.4}>
+        <HowItWorks />
+      </FadeIn>
 
-      <section className="max-w-7xl mx-auto px-4 py-16">
-        <div className="bg-gradient-to-r from-gray-900 to-gray-700 rounded-2xl p-8 md:p-12 text-center text-white">
-          <h2 className="text-3xl font-bold mb-4">Punya Desain Sendiri?</h2>
-          <p className="text-gray-200 mb-6 max-w-2xl mx-auto">
-            Upload desain custom Anda dan kami akan mewujudkannya menjadi bordir
-            berkualitas tinggi dengan detail sempurna.
-          </p>
-          <Button size="lg" variant="secondary" className="text-lg px-8" asChild>
-            <Link href="/upload-design">
-              Upload Desain Custom
-            </Link>
-          </Button>
+      <FadeIn delay={0.2} className="max-w-7xl mx-auto px-4 py-20">
+        <div className="relative overflow-hidden rounded-3xl">
+          <div className="absolute inset-0 bg-primary">
+            <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.05)_50%,transparent_75%,transparent_100%)] bg-[length:250%_250%,100%_100%] bg-[position:0_0,0_0] animate-[shimmer_3s_infinite_linear]" />
+            <div className="absolute -top-24 -right-24 w-96 h-96 bg-secondary/20 rounded-full blur-3xl" />
+            <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-secondary/10 rounded-full blur-3xl" />
+          </div>
+          
+          <div className="relative z-10 p-12 md:p-20 text-center">
+            <h2 className="font-heading text-3xl md:text-4xl font-bold mb-6 text-primary-foreground">
+              Punya Desain Sendiri?
+            </h2>
+            <p className="text-primary-foreground/80 mb-8 max-w-2xl mx-auto text-lg leading-relaxed">
+              Upload desain custom Anda dan kami akan mewujudkannya menjadi bordir
+              berkualitas tinggi dengan detail sempurna. Kami siap membantu visualisasi ide Anda.
+            </p>
+            <Button size="lg" variant="secondary" className="rounded-full text-lg px-8 h-14 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300" asChild>
+              <Link href="/upload-design">
+                Mulai Upload Desain
+              </Link>
+            </Button>
+          </div>
         </div>
-      </section>
+      </FadeIn>
     </div>
   );
 }
