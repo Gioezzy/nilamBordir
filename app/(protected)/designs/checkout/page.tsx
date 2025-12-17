@@ -14,6 +14,14 @@ import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { createOrderFromDesignAction } from '@/lib/actions/order';
 import DesignPreviewViewer from '@/components/design/design-preview-viewer';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { SHIPPING_RATES, PROVINCES } from '@/components/checkout/shipping-rates';
 
 export default function DesignCheckoutPage() {
   const searchParams = useSearchParams();
@@ -31,7 +39,19 @@ export default function DesignCheckoutPage() {
   const [pickupMethod, setPickupMethod] = useState<'in_store' | 'delivery'>(
     'in_store'
   );
+  const [selectedProvince, setSelectedProvince] = useState<string>('');
+  const [shippingCost, setShippingCost] = useState(0);
   const [note, setNote] = useState('');
+
+  useEffect(() => {
+    if (pickupMethod === 'in_store') {
+      setShippingCost(0);
+    } else if (pickupMethod === 'delivery' && selectedProvince) {
+      setShippingCost(SHIPPING_RATES[selectedProvince] || 0);
+    } else {
+      setShippingCost(0);
+    }
+  }, [pickupMethod, selectedProvince]);
 
   useEffect(() => {
     if (!designId) {
@@ -72,9 +92,15 @@ export default function DesignCheckoutPage() {
       return;
     }
 
-    if (pickupMethod === 'delivery' && !address) {
-      toast.error('Alamat pengiriman wajib diisi');
-      return;
+    if (pickupMethod === 'delivery') {
+      if (!address) {
+        toast.error('Alamat pengiriman wajib diisi');
+        return;
+      }
+      if (!selectedProvince) {
+        toast.error('Silakan pilih provinsi tujuan pengiriman');
+        return;
+      }
     }
 
     startTransition(async () => {
@@ -84,7 +110,10 @@ export default function DesignCheckoutPage() {
         pickupMethod,
         note,
         phone,
-        address: pickupMethod === 'delivery' ? address : undefined,
+        address: pickupMethod === 'delivery' 
+          ? `${address}, ${selectedProvince}` 
+          : undefined,
+        shippingCost: pickupMethod === 'delivery' ? shippingCost : 0,
       });
 
       if (result?.error) {
@@ -102,15 +131,18 @@ export default function DesignCheckoutPage() {
   }
 
   let customization = null;
-  let totalPrice = 50000;
+  let designPrice = 50000;
 
   try {
     const parsed = JSON.parse(design.custom_notes || '{}');
     customization = parsed.customization || parsed;
-    totalPrice = customization?.totalPrice || 50000;
+    designPrice = customization?.totalPrice || 50000;
   } catch (e) {
     console.error('Error parsing custom notes', e);
   }
+
+  const subtotal = designPrice * quantity;
+  const totalPrice = subtotal + shippingCost;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -168,7 +200,7 @@ export default function DesignCheckoutPage() {
                     <div>
                       <p className="font-semibold">Ambil di Toko</p>
                       <p className="text-sm text-gray-600">
-                        Gratis tanpa biaya tambahan
+                        Gratis tanpa biaya tambahan. Lokasi: Padang Panjang, Sumatera Barat.
                       </p>
                     </div>
                   </div>
@@ -192,9 +224,9 @@ export default function DesignCheckoutPage() {
                       className="mt-1"
                     />
                     <div>
-                      <p className="font-semibold">Pengiriman</p>
+                      <p className="font-semibold">Pengiriman Ekspedisi</p>
                       <p className="text-sm text-gray-600">
-                        Biaya dihitung saat konfirmasi
+                         Dikirim dari Padang Panjang menggunakan ekspedisi rekanan.
                       </p>
                     </div>
                   </div>
@@ -202,15 +234,36 @@ export default function DesignCheckoutPage() {
               </div>
 
               {pickupMethod === 'delivery' && (
-                <div className="space-y-2">
-                  <Label htmlFor="address">Alamat Pengiriman *</Label>
-                  <Textarea
-                    id="address"
-                    placeholder="Masukkan alamat lengkap"
-                    rows={4}
-                    value={address}
-                    onChange={e => setAddress(e.target.value)}
-                  />
+                <div className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="province">Provinsi Tujuan *</Label>
+                        <Select
+                            value={selectedProvince}
+                            onValueChange={setSelectedProvince}
+                        >
+                            <SelectTrigger className="h-10">
+                                <SelectValue placeholder="Pilih Provinsi" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {PROVINCES.map((prov) => (
+                                    <SelectItem key={prov} value={prov}>
+                                        {prov}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="address">Alamat Pengiriman *</Label>
+                        <Textarea
+                            id="address"
+                            placeholder="Masukkan alamat lengkap"
+                            rows={4}
+                            value={address}
+                            onChange={e => setAddress(e.target.value)}
+                        />
+                    </div>
                 </div>
               )}
             </div>
@@ -232,19 +285,21 @@ export default function DesignCheckoutPage() {
 
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Design Custom</span>
+                  <span className="text-gray-600">Design Custom (x{quantity})</span>
                   <span className="font-medium">{design.categories?.name}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal</span>
-                  <span>{formatRupiah(totalPrice)}</span>
+                  <span>{formatRupiah(subtotal)}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Biaya Pengiriman</span>
-                  <span>
+                  <span className="font-medium">
                     {pickupMethod === 'in_store'
                       ? 'Gratis'
-                      : 'Akan Dikonfirmasi'}
+                      : selectedProvince 
+                          ? formatRupiah(shippingCost)
+                          : '-'}
                   </span>
                 </div>
               </div>
