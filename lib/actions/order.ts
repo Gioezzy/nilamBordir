@@ -19,6 +19,7 @@ export interface CreateOrderInput {
   note?: string
   address?: string
   phone?: string
+  shippingCost?: number
 }
 
 export interface CreateOrderFromDesignInput {
@@ -29,6 +30,7 @@ export interface CreateOrderFromDesignInput {
   note?: string
   address?: string
   phone?: string
+  shippingCost?: number
 }
 
 export async function createOrderAction(input: CreateOrderInput) {
@@ -85,6 +87,9 @@ export async function createOrderAction(input: CreateOrderInput) {
       lineTotal: itemTotal
     })
   }
+
+  const shippingCost = input.shippingCost || 0
+  totalAmount += shippingCost
 
   const orderNumber = generateOrderNumber()
 
@@ -218,7 +223,8 @@ export async function createOrderFromDesignAction(input: CreateOrderFromDesignIn
     return { error: 'Harga design tidak valid' }
   }
 
-  const totalAmount = unitPrice * input.quantity
+  const shippingCost = input.shippingCost || 0
+  const totalAmount = (unitPrice * input.quantity) + shippingCost
   const orderNumber = generateOrderNumber()
 
   const { data: order, error: orderError } = await supabase
@@ -390,6 +396,48 @@ export const getOrderById = cache(async (orderId: string): Promise<OrderWithDeta
 
   if (error) {
     console.error('Error fetching order:', error)
+    return null
+  }
+
+  return data as OrderWithDetails
+})
+
+export const getAdminOrderById = cache(async (orderId: string): Promise<OrderWithDetails | null> => {
+  const supabase = await createClient()
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  if (!profile || profile.role !== 'admin') {
+    return null
+  }
+
+  const { data, error } = await supabase
+    .from('orders')
+    .select(`
+      *,
+      profiles(full_name, phone, address),
+      order_items (
+        *,
+        products:products(*),
+        designs:designs(
+          *,
+          categories(*)
+        )
+      ),
+      payment:payments(*)
+    `)
+    .eq('id', orderId)
+    .single()
+
+  if (error) {
+    console.error('Error fetching admin order:', error)
     return null
   }
 
