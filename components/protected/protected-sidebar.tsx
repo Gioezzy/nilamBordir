@@ -57,7 +57,7 @@ export default function ProtectedSidebar() {
   };
 
   return (
-    <aside className="w-64 bg-white border-r min-h-screen p-6 hidden lg:block">
+    <aside className="w-64 bg-card border-r border-border/50 min-h-screen p-6 hidden lg:block sticky top-0 h-screen">
       <div className="space-y-1">
         {menuItems.map(item => {
           const Icon = item.icon;
@@ -69,14 +69,21 @@ export default function ProtectedSidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                'flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors',
+                'flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group',
                 isActive
-                  ? 'bg-gray-900 text-white'
-                  : 'text-gray-700 hover:bg-gray-100'
+                  ? 'bg-primary/10 text-primary font-bold'
+                  : 'text-muted-foreground hover:bg-secondary/10 hover:text-secondary'
               )}
             >
-              <Icon className="w-5 h-5" />
-              <span className="font-medium">{item.title}</span>
+              <Icon
+                className={cn(
+                  'w-5 h-5',
+                  isActive
+                    ? 'text-primary'
+                    : 'text-muted-foreground group-hover:text-secondary'
+                )}
+              />
+              <span>{item.title}</span>
             </Link>
           );
         })}
@@ -84,7 +91,7 @@ export default function ProtectedSidebar() {
         <button
           onClick={handleLogout}
           disabled={isPending}
-          className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors mt-4"
+          className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors mt-8"
         >
           <LogOut className="w-5 h-5" />
           <span className="font-medium">

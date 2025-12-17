@@ -51,7 +51,6 @@ export default function PaymentButton({
     return () => {
       const scriptTag = document.querySelector(`script[src="${script.src}"]`);
       if (scriptTag) {
-        // document.body.removeChild(scriptTag);
       }
     };
   }, []);

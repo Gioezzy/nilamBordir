@@ -50,8 +50,8 @@ export default function OrderTrackingTimeline({
         description: 'Pembayaran telah dikonfirmasi',
         timestamp: payment?.created_at || order.updated_at,
         icon: CreditCard,
-        iconColor: 'text-green-600',
-        bgColor: 'bg-green-100',
+        iconColor: 'text-primary',
+        bgColor: 'bg-primary/10',
         completed: true,
       });
     }
@@ -65,8 +65,8 @@ export default function OrderTrackingTimeline({
         description: 'Pesanan Anda sedang dalam proses produksi',
         timestamp: order.updated_at,
         icon: Package,
-        iconColor: 'text-purple-600',
-        bgColor: 'bg-purple-100',
+        iconColor: 'text-secondary',
+        bgColor: 'bg-secondary/10',
         completed: true,
       });
     }
@@ -78,8 +78,8 @@ export default function OrderTrackingTimeline({
         description: 'Pesanan Anda sudah siap untuk diambil atau dikirim',
         timestamp: order.updated_at,
         icon: Truck,
-        iconColor: 'text-blue-600',
-        bgColor: 'bg-blue-100',
+        iconColor: 'text-primary',
+        bgColor: 'bg-primary/10',
         completed: true,
       });
     }
@@ -91,8 +91,8 @@ export default function OrderTrackingTimeline({
         description: 'Pesanan telah selesai',
         timestamp: order.updated_at,
         icon: CheckCircle,
-        iconColor: 'text-green-600',
-        bgColor: 'bg-green-100',
+        iconColor: 'text-green-500',
+        bgColor: 'bg-green-500/10',
         completed: true,
       });
     }
@@ -104,8 +104,8 @@ export default function OrderTrackingTimeline({
         description: 'Pesanan telah dibatalkan',
         timestamp: order.updated_at,
         icon: XCircle,
-        iconColor: 'text-red-600',
-        bgColor: 'bg-red-100',
+        iconColor: 'text-destructive',
+        bgColor: 'bg-destructive/10',
         completed: true,
       });
     }
@@ -116,8 +116,10 @@ export default function OrderTrackingTimeline({
   const events = getTimelineEvents();
 
   return (
-    <div className="bg-white rounded-lg border p-6">
-      <h3 className="text-lg font-semibold mb-6">Tracking Pesanan</h3>
+    <div className="bg-card rounded-2xl border border-border/50 p-6 shadow-sm">
+      <h3 className="text-lg font-bold font-heading mb-6 text-foreground">
+        Tracking Pesanan
+      </h3>
 
       <div className="space-y-6">
         {events.map((event, index) => {
@@ -127,7 +129,7 @@ export default function OrderTrackingTimeline({
           return (
             <div key={event.status} className="relative">
               {!isLast && (
-                <div className="absolute left-5 top-12 bottom-0 w-0.5 bg-gray-200" />
+                <div className="absolute left-5 top-12 bottom-0 w-0.5 bg-border/50" />
               )}
 
               <div className="flex gap-4">
@@ -140,19 +142,19 @@ export default function OrderTrackingTimeline({
                 <div className="flex-1 pb-8">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h4 className="font-semibold text-gray-900">
+                      <h4 className="font-bold text-foreground font-heading">
                         {event.label}
                       </h4>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <p className="text-sm text-muted-foreground mt-1">
                         {event.description}
                       </p>
-                      <p className="text-xs text-gray-500 mt-2">
+                      <p className="text-xs text-muted-foreground/70 mt-2">
                         {formatDateTime(event.timestamp)}
                       </p>
                     </div>
 
                     {event.completed && (
-                      <CheckCircle className="w-5 h-5 text-green-500" />
+                      <CheckCircle className="w-5 h-5 text-primary" />
                     )}
                   </div>
                 </div>
@@ -163,8 +165,8 @@ export default function OrderTrackingTimeline({
       </div>
 
       {!['completed', 'cancelled'].includes(order.status) && (
-        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-sm text-blue-900">
+        <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-xl">
+          <p className="text-sm text-primary">
             <span className="font-semibold">Estimasi Selesai:</span> 3-5 hari
             kerja dari pembayaran
           </p>
