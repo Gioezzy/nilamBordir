@@ -20,11 +20,9 @@ export default async function ProtectedLayout({
   return (
     <>
       <Navbar />
-      <div className="flex min-h-screen bg-gray-50">
+      <div className="flex min-h-screen bg-background">
         <ProtectedSidebar />
-        <main className="flex-1 p-6 lg:p-8">
-          {children}
-        </main>
+        <main className="flex-1 p-6 lg:p-8">{children}</main>
       </div>
     </>
   );
