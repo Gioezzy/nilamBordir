@@ -1,168 +1,141 @@
-# Embroidery Services
+# Embroidery Services Platform
 
 <div align="center">
-  <img src="https://res.cloudinary.com/dyfi4bwkp/image/upload/v1763913339/Screenshot_from_2025-11-23_22-54-11_ctyaey.png" alt="Embroide Master Logo" width="1200"/>
+  <img src="https://res.cloudinary.com/dyfi4bwkp/image/upload/v1763913339/Screenshot_from_2025-11-23_22-54-11_ctyaey.png" alt="Embroide Master Logo" width="100%" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"/>
 </div>
 
+<br />
+
 <p align="center">
-  <strong>An E-commerce Platform for Custom Embroidery Services</strong>
+  <strong>A Next-Gen E-commerce Platform for Custom Embroidery Services</strong>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Project_Status-Active-brightgreen?style=for-the-badge" alt="Project Status"/>
-  <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js"/>
+  <img src="https://img.shields.io/badge/Next.js_16-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js 16"/>
+  <img src="https://img.shields.io/badge/React_19-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 19"/>
   <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"/>
   <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS"/>
   <img src="https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase"/>
-  <img src="https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white" alt="ESLint"/>
+  <img src="https://img.shields.io/badge/Midtrans-0052CC?style=for-the-badge&logo=mastercard&logoColor=white" alt="Midtrans"/>
 </p>
+
+<div align="center">
+  <a href="#-features">Features</a> •
+  <a href="#-tech-stack">Tech Stack</a> •
+  <a href="#-getting-started">Getting Started</a> •
+  <a href="#-project-structure">Structure</a> •
+  <a href="#-deployment">Deployment</a>
+</div>
 
 ---
 
-Embroide Master is a modern e-commerce platform built with Next.js, specializing in providing custom embroidery services. Customers can browse products, upload their own designs, and place orders seamlessly. The project also features a robust admin panel for managing products, orders, and site content.
+## 🚀 Overview
 
+**Embroide Master** (Nilam Bordir) is a sophisticated e-commerce solution designed specifically for the embroidery business. Unlike standard online stores, it features a specialized custom design workflow that allows customers to configure intricate embroidery details—from sash text to logo placement—directly on the platform.
 
-## ✨ Features
+Built with **Next.js 16 (App Router)** and **Server Actions**, it offers a blazing fast, secure, and SEO-friendly experience.
 
--   **User Authentication**: Secure registration and login process, including social login with Google.
--   **Product Browsing**: Users can search, filter, and sort through products.
--   **Custom Design Upload**: An intuitive interface for users to upload their own embroidery designs and specify customization details.
--   **Shopping Cart & Checkout**: A persistent shopping cart and a secure checkout process integrated with Midtrans.
--   **User Dashboard**: Users can view their order history, manage their profile, and track order statuses.
--   **Admin Panel**: A comprehensive dashboard for admins to manage products, categories, orders, and design reviews.
+## ✨ Key Features
+
+### 🛍️ Client Experience
+-   **Custom Design Studio**: Interactive interface for configuring Salempang, Name Tags, and Logo Embroidery with real-time preview.
+-   **Smart Checkout**: Integrated logical shipping calculation based on province (centered in Padang Panjang).
+-   **Secure Payments**: Seamless payment processing via Midtrans Gateway.
+-   **Order Tracking**: Real-time status updates from production to delivery.
+-   **Responsive Design**: Fully optimized for mobile, tablet, and desktop using Tailwind CSS.
+
+### 🛡️ Admin Dashboard
+-   **Design Review**: Visual interface to inspect customer design specifications (colors, fonts, layout) against uploaded assets.
+-   **Order Management**: Full lifecycle management of orders (Pending -> Processing -> Shipped).
+-   **Analytics**: Real-time insights into sales, top products, and revenue growth.
+-   **Content Management**: easy-to-use CRUD for products and categories.
 
 ## 🛠️ Tech Stack
 
--   **Framework**: [Next.js](https://nextjs.org/)
+-   **Framework**: [Next.js 16](https://nextjs.org/) (App Router, Turbopack)
 -   **Language**: [TypeScript](https://www.typescriptlang.org/)
--   **Database & Auth**: [Supabase](https://supabase.io/)
--   **Styling**: [Tailwind CSS](https://tailwindcss.com/) & [shadcn/ui](https://ui.shadcn.com/)
--   **Image Storage**: [Cloudinary](https://cloudinary.com/)
--   **Payment Gateway**: [Midtrans](https://midtrans.com/)
--   **Form Validation**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
+-   **UI Library**: [React 19](https://react.dev/), [shadcn/ui](https://ui.shadcn.com/), [Lucide Icons](https://lucide.dev/)
+-   **Styling**: [Tailwind CSS](https://tailwindcss.com/), [Framer Motion](https://www.framer.com/motion/) (Animations)
+-   **Backend & Auth**: [Supabase](https://supabase.com/) (PostgreSQL, Auth, Realtime)
+-   **Storage**: [Cloudinary](https://cloudinary.com/) (Optimized Image Delivery)
+-   **Forms**: [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/) Validation
+-   **Payments**: [Midtrans](https://midtrans.com/)
 
 ## 🚀 Getting Started
 
-To get a local copy up and running, follow these simple steps.
-
 ### Prerequisites
-
-Make sure you have the latest version of [Node.js](https://nodejs.org/) and your preferred package manager (npm, yarn, or pnpm) installed.
+-   Node.js 18.17+
+-   npm, pnpm, or yarn
 
 ### Installation
 
-1.  **Clone the repository:**
+1.  **Clone the repository**
     ```bash
     git clone https://github.com/Gioezzy/nilamBordir.git
     cd nilam-bordir
     ```
 
-2.  **Install dependencies:**
+2.  **Install dependencies**
     ```bash
     npm install
     ```
 
-### Environment Variables
-
-1.  Copy the `.env.example` file to a new file named `.env.local`:
-    ```bash
-    cp .env.example .env.local
-    ```
-
-2.  Open the `.env.local` file and fill in the required variables:
-    -   **Supabase**: Get your project URL and `anon` key from your Supabase dashboard.
-    -   **Cloudinary**: Get your cloud name, API key, and API secret from your Cloudinary dashboard.
-    -   **Midtrans**: Get your server key and client key from your Midtrans dashboard.
+3.  **Setup Environment Variables**
+    Create a `.env.local` file and add the following keys:
 
     ```env
-    # Supabase
-    NEXT_PUBLIC_SUPABASE_URL=YOUR_SUPABASE_PROJECT_URL
-    NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+    # Supabase (Database & Auth)
+    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
-    # Cloudinary
-    CLOUDINARY_CLOUD_NAME=YOUR_CLOUDINARY_CLOUD_NAME
-    CLOUDINARY_API_KEY=YOUR_CLOUDINARY_API_KEY
-    CLOUDINARY_API_SECRET=YOUR_CLOUDINARY_API_SECRET
+    # Cloudinary (Media Storage)
+    CLOUDINARY_CLOUD_NAME=your_cloud_name
+    CLOUDINARY_API_KEY=your_api_key
+    CLOUDINARY_API_SECRET=your_api_secret
 
-    # Midtrans
-    MIDTRANS_SERVER_KEY=YOUR_MIDTRANS_SERVER_KEY
-    MIDTRANS_CLIENT_KEY=YOUR_MIDTRANS_CLIENT_KEY
+    # Midtrans (Payment Gateway)
+    MIDTRANS_SERVER_KEY=your_server_key
+    MIDTRANS_CLIENT_KEY=your_client_key
     MIDTRANS_IS_PRODUCTION=false
     ```
 
-## 🏃 Running the Project
-
-To start the development server, run:
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
-
-### Other Commands
-
--   **Build for Production**:
+4.  **Run Development Server**
     ```bash
-    npm run build
+    npm run dev
     ```
-
--   **Start Production Server**:
-    ```bash
-    npm run start
-    ```
-
--   **Lint Code**:
-    ```bash
-    npm run lint
-    ```
-
-## 🌐 API Endpoints Overview
-
-The application exposes several API endpoints for various functionalities:
-
--   `/api/admin/categories`: CRUD operations for product categories (Admin only).
--   `/api/admin/products`: CRUD operations for products (Admin only).
--   `/api/admin/orders`: Update order status (Admin only).
--   `/api/designs`: Create new design uploads, update design status (Admin only).
--   `/api/upload-image`: Handles image uploads to Cloudinary.
--   `/api/test`: Cloudinary connection test endpoint.
-
-## ☁️ Deployment
-
-This project is designed to be easily deployed on [Vercel](https://vercel.com), the creators of Next.js.
-
-1.  Push your repository to GitHub.
-2.  Connect your GitHub repository to Vercel.
-3.  Configure your environment variables on Vercel.
-4.  Deploy!
+    Visit `http://localhost:3000` to view the app.
 
 ## 📂 Project Structure
 
-Here is an overview of the main directory structure:
-
-```
+```bash
 /
-├── app/                # Main routes, pages, and layouts
-│   ├── (auth)/         # Authentication-related routes
-│   ├── (main)/         # Main public-facing pages
-│   ├── (protected)/    # Protected routes (user dashboard)
-│   └── admin/          # Routes and pages for the admin panel
-│   └── api/            # API routes
-├── components/         # Reusable React components
-│   ├── forms/          # Form components
-│   ├── ui/             # Base UI components (buttons, inputs, etc.)
-│   └── ...
-├── lib/                # Utility functions, server actions, and Supabase client
-│   ├── actions/        # Next.js Server Actions
-│   └── supabase/       # Supabase clients and types
-└── public/             # Static assets (images, icons)
+├── app/                  # Next.js 16 App Router
+│   ├── (auth)/           # Login/Register routes group
+│   ├── (main)/           # Public shopping pages (Cart, Shop, etc.)
+│   ├── (protected)/      # User account & Design Studio
+│   ├── admin/            # Admin Dashboard features
+│   └── api/              # Server-side API endpoints
+├── components/           # React Components
+│   ├── admin/            # Admin-specific UI
+│   ├── checkout/         # Checkout logic & Shipping rates
+│   ├── design/           # Design Studio & Preview logic
+│   └── ui/               # Shadcn UI primitives
+├── lib/                  # Utilities
+│   ├── actions/          # Server Actions (Orders, Analytics)
+│   └── supabase/         # Database clients
+└── public/               # Static assets
 ```
+
+## 🔒 Security Measures
+
+-   **Role-Based Access Control (RBAC)**: Strict separation between User and Admin routes.
+-   **Server-Side Validation**: All inputs validated with Zod on the server.
+-   **Secure Payments**: No credit card data stored locally; handled via tokenization.
+-   **Patched**: Running on the latest secure version of Next.js 16.
 
 ## 🤝 Contributing
 
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
+Contributions are welcome!
 1.  Fork the Project
 2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
 3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
@@ -171,14 +144,12 @@ Contributions are what make the open-source community such an amazing place to l
 
 ## 📝 License
 
-This project is licensed under the MIT License.
-
-## 📧 Contact
-
-Project Link: [https://github.com/Gioezzy/nilamBordir](https://github.com/Gioezzy/nilamBordir)
+Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
 <p align="center">
-  Made with ❤️ by <a href="https://github.com/Gioezzy">Gioezzy</a>
+  Did you find this project useful? Give it a ⭐ on GitHub!
+  <br/>
+  Created by <a href="https://github.com/Gioezzy">Gioezzy</a>
 </p>
