@@ -22,8 +22,9 @@ export default function OrderFormBuilder({
   actions,
   headerContent,
 }: OrderFormBuilderProps) {
-  const [customization, setCustomization] =
-    useState<OrderCustomization | null>(null);
+  const [customization, setCustomization] = useState<OrderCustomization | null>(
+    null
+  );
 
   const handleCustomizationChange = useCallback(
     (customization: OrderCustomization) => {
@@ -66,8 +67,8 @@ export default function OrderFormBuilder({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
-      <div className="lg:col-span-2">{renderForm()}</div>
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-12">
+      <div className="lg:col-span-3">{renderForm()}</div>
 
       <div className="lg:col-span-1">
         <div className="lg:sticky lg:top-24 self-start space-y-6">

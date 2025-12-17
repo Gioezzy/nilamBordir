@@ -140,8 +140,8 @@ export default function SalempangForm({
   ]);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
-      <div className="lg:col-span-2 space-y-8">
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 lg:gap-12">
+      <div className="xl:col-span-1 space-y-8">
         <div>
           <Label className="text-lg font-semibold">1. Pilih Jumlah Titik</Label>
           <p className="text-sm text-gray-600 mb-3">

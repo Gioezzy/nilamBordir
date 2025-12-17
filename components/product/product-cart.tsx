@@ -23,30 +23,32 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <Link
       href={`/product/${product.slug}`}
-      className="group bg-white rounded-lg overflow-hidden border hover:shadow-lg transition-all duration-300"
+      className="group relative bg-card rounded-xl overflow-hidden border border-border/50 hover:border-secondary/50 shadow-sm hover:shadow-xl transition-all duration-500"
     >
-      <div className="relative aspect-square bg-gray-100 overflow-hidden">
+      <div className="relative aspect-square bg-muted overflow-hidden">
         <Image
           src={imageUrl}
           alt={product.name}
           fill
-          className="object-cover group-hover:scale-110 transition-transform duration-500"
+          className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
         />
 
         {product.category && (
           <div className="absolute top-3 left-3">
-            <Badge variant="secondary" className="bg-white/90 backdrop-blur-sm">
+            <Badge className="bg-background/80 backdrop-blur-md text-foreground hover:bg-background/90 border-0">
               {product.category.name}
             </Badge>
           </div>
         )}
+
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
       </div>
 
-      <div className="p-4">
-        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:to-gray-700 transition-colors">
+      <div className="p-5">
+        <h3 className="font-heading text-lg font-medium text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
           {product.name}
         </h3>
-        <p className="text-xl font-bold text-gray-900">
+        <p className="text-xl font-bold text-primary">
           {formatRupiah(product.price)}
         </p>
       </div>
