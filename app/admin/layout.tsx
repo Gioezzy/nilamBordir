@@ -27,10 +27,13 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-background">
       <AdminSidebar />
-      <main className="flex-1 overflow-x-hidden">
-        <div className="container mx-auto px-4 py-8">{children}</div>
+      <main className="flex-1 overflow-x-hidden relative">
+        <div className="absolute inset-0 bg-[url('/pattern.png')] opacity-5 pointer-events-none" />
+        <div className="container mx-auto px-6 py-8 relative z-10">
+          {children}
+        </div>
       </main>
     </div>
   );

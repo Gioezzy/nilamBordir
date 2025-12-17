@@ -18,24 +18,24 @@ export default async function CreateProductPage() {
     .order('name');
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center gap-4">
         <Link href="/admin/product">
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" className="rounded-xl">
             <ChevronLeft className="w-5 h-5" />
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-foreground font-heading">
             Tambah Produk Baru
           </h1>
-          <p className="text-gray-600 mt-2">
-            Lengkapi form di bawah untuk menambah produk
+          <p className="text-muted-foreground mt-1">
+            Lengkapi informasi produk untuk menambahkannya ke katalog.
           </p>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg border p-6">
+      <div className="bg-card rounded-2xl border border-border/50 p-8 shadow-sm">
         <ProductForm categories={categories || []} />
       </div>
     </div>
