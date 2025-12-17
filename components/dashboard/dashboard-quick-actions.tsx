@@ -2,27 +2,43 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { ShoppingBag, FileText, Upload } from 'lucide-react';
 
 export default function DashboardQuickActions() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <Link href="/shop">
-        <Button variant="outline" className="w-full">
+    <div className="flex flex-col gap-3">
+      <Button
+        variant="outline"
+        className="w-full justify-start h-12 text-left font-medium"
+        asChild
+      >
+        <Link href="/shop">
+          <ShoppingBag className="w-4 h-4 mr-3 text-primary" />
           Mulai Belanja
-        </Button>
-      </Link>
+        </Link>
+      </Button>
 
-      <Link href="/orders">
-        <Button variant="outline" className="w-full">
-          Lihat Semua Pesanan
-        </Button>
-      </Link>
+      <Button
+        variant="outline"
+        className="w-full justify-start h-12 text-left font-medium"
+        asChild
+      >
+        <Link href="/orders">
+          <FileText className="w-4 h-4 mr-3 text-primary" />
+          Riwayat Pesanan
+        </Link>
+      </Button>
 
-      <Link href="/upload-design">
-        <Button variant="outline" className="w-full">
-          Upload Desain
-        </Button>
-      </Link>
+      <Button
+        variant="outline"
+        className="w-full justify-start h-12 text-left font-medium"
+        asChild
+      >
+        <Link href="/upload-design">
+          <Upload className="w-4 h-4 mr-3 text-primary" />
+          Upload Desain Custom
+        </Link>
+      </Button>
     </div>
   );
 }

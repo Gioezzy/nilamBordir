@@ -36,24 +36,24 @@ export default function RecentOrders({ orders }: RecentOrdersProps) {
         <Link
           key={order.id}
           href={`/orders/${order.id}`}
-          className="block bg-white border rounded-lg p-4 hover:shadow-md transition-shadow"
+          className="block bg-card border border-border/50 rounded-xl p-4 hover:shadow-md transition-all hover:border-primary/20 group"
         >
           <div className="flex items-center justify-between mb-2">
             <div>
-              <p className="font-semibold text-gray-900">
+              <p className="font-semibold text-foreground group-hover:text-primary transition-colors">
                 {order.order_number}
               </p>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 {formatDate(order.created_at)}
               </p>
             </div>
             <OrderStatusBadge status={order.status} />
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-lg font-bold text-gray-900">
+            <p className="text-lg font-bold text-foreground font-heading">
               {formatRupiah(order.total_amount)}
             </p>
-            <ChevronRight className="w-5 h-5 text-gray-400" />
+            <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
           </div>
         </Link>
       ))}
