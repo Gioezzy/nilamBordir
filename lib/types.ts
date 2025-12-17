@@ -90,7 +90,6 @@ export interface ContentItem {
   position: 'left' | 'right';
 }
 
-// Specific customization types for each category
 export interface SalempangCustomization {
   categorySlug: 'salempang';
   titik: string;
