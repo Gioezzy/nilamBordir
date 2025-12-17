@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import DesignUploadForm from '@/components/forms/design-upload-form';
+import FadeIn from '@/components/animations/fade-in';
 
 export const metadata = {
   title: 'Upload Design Custom - Nilam Bordir',
@@ -25,19 +26,31 @@ export default async function UploadDesignPage() {
     .order('display_order');
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Upload Design Custom
-          </h1>
-          <p className="text-lg text-gray-600">
-            Upload design bordir custom Anda dengan spesifikasi lengkap.
-          </p>
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="bg-primary/5 border-b border-primary/10 py-12 md:py-16">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <FadeIn>
+            <span className="inline-block px-3 py-1 mb-4 rounded-full bg-secondary/10 text-secondary text-sm font-medium tracking-wide border border-secondary/20">
+              Custom Order
+            </span>
+            <h1 className="font-heading text-4xl md:text-5xl font-bold mb-4">
+              Upload Design Custom
+            </h1>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Wujudkan ide kreatif Anda menjadi bordir berkualitas. Isi form di
+              bawah ini dengan detail spesifikasi yang diinginkan.
+            </p>
+          </FadeIn>
         </div>
+      </div>
 
-        <div className="bg-white rounded-lg border p-6 sm:p-8">
-          <DesignUploadForm categories={categories || []} />
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        <div className="max-w-7xl mx-auto">
+          <FadeIn delay={0.2}>
+            <div className="bg-card rounded-2xl border border-border/50 shadow-sm p-6 sm:p-8">
+              <DesignUploadForm categories={categories || []} />
+            </div>
+          </FadeIn>
         </div>
       </div>
     </div>

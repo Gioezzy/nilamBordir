@@ -7,6 +7,7 @@ import { ProductWithCategory } from '@/lib/types';
 import ProductOrderForm from '@/components/product/product-order-form';
 import Breadcrumb from '@/components/layout/breadcrumb';
 import { Loader2 } from 'lucide-react';
+import FadeIn from '@/components/animations/fade-in';
 
 export default function CustomizePage() {
   const searchParams = useSearchParams();
@@ -63,19 +64,21 @@ export default function CustomizePage() {
   return (
     <div className="bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <Breadcrumb
-          items={[
-            {
-              label: product.category?.name || 'Produk',
-              href: `/category/${product.category?.slug || ''}`,
-            },
-            { label: product.name, href: `/product/${product.slug}` },
-            { label: 'Kustomisasi' },
-          ]}
-        />
-        <div className="mt-8">
-          <ProductOrderForm product={product} />
-        </div>
+        <FadeIn>
+          <Breadcrumb
+            items={[
+              {
+                label: product.category?.name || 'Produk',
+                href: `/category/${product.category?.slug || ''}`,
+              },
+              { label: product.name, href: `/product/${product.slug}` },
+              { label: 'Kustomisasi' },
+            ]}
+          />
+          <div className="mt-8">
+            <ProductOrderForm product={product} />
+          </div>
+        </FadeIn>
       </div>
     </div>
   );
