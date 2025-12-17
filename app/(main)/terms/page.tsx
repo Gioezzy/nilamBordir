@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
-import { Separator } from '@/components/ui/separator';
 import BackButton from '@/components/layout/back-button';
+import FadeIn from '@/components/animations/fade-in';
 
 export const metadata: Metadata = {
   title: 'Syarat & Ketentuan - Nilam Bordir',
@@ -9,142 +9,132 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        <div className="bg-white rounded-lg border shadow-sm p-8 md:p-12">
-          <BackButton />
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      <div className="absolute inset-0 bg-[url('/pattern.png')] opacity-5" />
 
-          <header className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900">
-              Syarat & Ketentuan
-            </h1>
-            <p className="text-gray-600 mt-2">
-              Terakhir diperbarui: 25 November 2025
-            </p>
-          </header>
+      <div className="max-w-4xl mx-auto px-4 py-12 relative z-10">
+        <FadeIn>
+          <div className="bg-card rounded-2xl border border-border/50 shadow-xl overflow-hidden">
+            <div className="bg-secondary/10 p-8 md:p-12 text-center border-b border-border/50">
+              <h1 className="text-3xl md:text-4xl font-bold text-foreground font-heading mb-2">
+                Syarat & Ketentuan
+              </h1>
+              <p className="text-muted-foreground">
+                Terakhir diperbarui: 25 November 2025
+              </p>
+            </div>
 
-          <Separator className="mb-8" />
+            <div className="p-8 md:p-12">
+              <BackButton className="mb-8" />
 
-          <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed">
-            <p>
-              Selamat datang di Nilam Bordir. Syarat dan ketentuan ini menguraikan
-              aturan dan peraturan untuk penggunaan situs web kami. Dengan
-              mengakses situs web ini, kami menganggap Anda menerima syarat dan
-              ketentuan ini secara penuh. Jangan lanjutkan penggunaan situs web
-              Nilam Bordir jika Anda tidak menerima semua syarat dan ketentuan
-              yang tercantum di halaman ini.
-            </p>
+              <div className="prose prose-slate dark:prose-invert max-w-none">
+                <p className="lead text-lg text-muted-foreground">
+                  Selamat datang di Nilam Bordir. Kami menyarankan Anda untuk
+                  membaca syarat dan ketentuan ini dengan saksama sebelum
+                  menggunakan layanan kami.
+                </p>
 
-            <h2 className="text-2xl font-semibold mt-8 mb-4 text-gray-800">
-              1. Definisi
-            </h2>
-            <ul>
-              <li>
-                <strong>&quot;Layanan&quot;</strong> berarti situs web e-commerce Nilam
-                Bordir dan semua layanan terkait yang ditawarkan.
-              </li>
-              <li>
-                <strong>&quot;Pengguna&quot;, &quot;Anda&quot;</strong> berarti setiap individu atau
-                entitas yang menggunakan Layanan kami.
-              </li>
-              <li>
-                <strong>&quot;Kami&quot;</strong> berarti Nilam Bordir.
-              </li>
-              <li>
-                <strong>&quot;Produk&quot;</strong> berarti barang bordir kustom atau
-                produk lain yang tersedia untuk dibeli melalui Layanan kami.
-              </li>
-            </ul>
+                <div className="space-y-12 mt-8">
+                  <section>
+                    <h2 className="text-2xl font-bold text-foreground font-heading flex items-center gap-3">
+                      <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm">
+                        1
+                      </span>
+                      Definisi
+                    </h2>
+                    <ul className="mt-4 list-disc pl-5 space-y-2 text-muted-foreground">
+                      <li>
+                        <strong>&quot;Layanan&quot;</strong>: Situs web
+                        e-commerce Nilam Bordir dan semua layanan terkait.
+                      </li>
+                      <li>
+                        <strong>&quot;Pengguna&quot;, &quot;Anda&quot;</strong>:
+                        Setiap individu atau entitas yang menggunakan Layanan
+                        kami.
+                      </li>
+                      <li>
+                        <strong>&quot;Kami&quot;</strong>: Pihak Nilam Bordir.
+                      </li>
+                      <li>
+                        <strong>&quot;Produk&quot;</strong>: Barang bordir
+                        kustom atau produk lain yang tersedia.
+                      </li>
+                    </ul>
+                  </section>
 
-            <h2 className="text-2xl font-semibold mt-8 mb-4 text-gray-800">
-              2. Penggunaan Layanan
-            </h2>
-            <p>
-              Dengan menggunakan Layanan kami, Anda setuju untuk mematuhi semua
-              hukum yang berlaku dan tidak akan menggunakan Layanan untuk tujuan
-              ilegal atau tidak sah. Anda bertanggung jawab atas semua aktivitas
-              yang terjadi di bawah akun Anda.
-            </p>
+                  <section>
+                    <h2 className="text-2xl font-bold text-foreground font-heading flex items-center gap-3">
+                      <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm">
+                        2
+                      </span>
+                      Penggunaan Layanan
+                    </h2>
+                    <p className="mt-4 text-muted-foreground">
+                      Dengan menggunakan Layanan kami, Anda setuju untuk
+                      mematuhi semua hukum yang berlaku dan tidak akan
+                      menggunakan Layanan untuk tujuan ilegal atau tidak sah.
+                      Anda bertanggung jawab penuh atas keamanan akun Anda.
+                    </p>
+                  </section>
 
-            <h2 className="text-2xl font-semibold mt-8 mb-4 text-gray-800">
-              3. Pesanan dan Pembayaran
-            </h2>
-            <p>
-              Semua pesanan tunduk pada ketersediaan dan konfirmasi harga
-              pesanan. Kami berhak menolak pesanan apa pun yang Anda tempatkan.
-              Harga untuk Produk kami dapat berubah tanpa pemberitahuan. Kami
-              menerima berbagai metode pembayaran yang akan ditampilkan saat
-              proses checkout. Pembayaran harus diselesaikan sepenuhnya sebelum
-              pesanan diproses.
-            </p>
+                  <section>
+                    <h2 className="text-2xl font-bold text-foreground font-heading flex items-center gap-3">
+                      <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm">
+                        3
+                      </span>
+                      Pesanan & Pembayaran
+                    </h2>
+                    <p className="mt-4 text-muted-foreground">
+                      Semua pesanan tunduk pada ketersediaan. Kami berhak
+                      menolak pesanan apa pun. Harga dapat berubah
+                      sewaktu-waktu. Pembayaran wajib diselesaikan sebelum
+                      pesanan diproses (full payment).
+                    </p>
+                  </section>
 
-            <h2 className="text-2xl font-semibold mt-8 mb-4 text-gray-800">
-              4. Desain Unggahan Pengguna
-            </h2>
-            <p>
-              Anda bertanggung jawab penuh atas desain, gambar, atau teks yang
-              Anda unggah untuk produk kustom. Dengan mengunggah konten, Anda
-              menyatakan bahwa Anda memiliki hak kekayaan intelektual yang
-              diperlukan (hak cipta, merek dagang, dll.&quot;) atau memiliki izin dari
-              pemilik sah untuk menggunakan konten tersebut.
-            </p>
-            <p>
-              Anda setuju untuk tidak mengunggah konten yang melanggar hukum,
-              cabul, memfitnah, atau melanggar hak pihak ketiga mana pun. Kami
-              berhak menolak untuk memproses desain apa pun yang kami anggap
-              tidak pantas.
-            </p>
+                  <section>
+                    <h2 className="text-2xl font-bold text-foreground font-heading flex items-center gap-3">
+                      <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm">
+                        4
+                      </span>
+                      Desain Unggahan Pengguna
+                    </h2>
+                    <div className="mt-4 p-4 bg-muted rounded-lg border border-border/50 text-muted-foreground text-sm italic">
+                      &quot;Anda bertanggung jawab penuh atas hak cipta desain
+                      yang diunggah. Kami berhak menolak desain yang mengandung
+                      SARA atau materi ilegal.&quot;
+                    </div>
+                  </section>
 
-            <h2 className="text-2xl font-semibold mt-8 mb-4 text-gray-800">
-              5. Pengiriman dan Pengambilan
-            </h2>
-            <p>
-              Waktu produksi dan pengiriman adalah estimasi dan dapat bervariasi.
-              Kami tidak bertanggung jawab atas keterlambatan yang disebabkan
-              oleh pihak ketiga (misalnya, jasa kurir). Untuk pengambilan di
-              toko, Anda akan diinformasikan ketika pesanan Anda siap untuk
-              diambil.
-            </p>
+                  <section>
+                    <h2 className="text-2xl font-bold text-foreground font-heading flex items-center gap-3">
+                      <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm">
+                        5
+                      </span>
+                      Kebijakan Pengembalian (Refund)
+                    </h2>
+                    <p className="mt-4 text-muted-foreground">
+                      Karena sifat produk kami yang <strong>custom-made</strong>
+                      , pesanan yang sudah diproduksi{' '}
+                      <span className="text-destructive font-medium">
+                        tidak dapat dibatalkan
+                      </span>
+                      . Pengembalian dana atau revisi hanya berlaku jika
+                      terdapat kesalahan produksi dari pihak kami (cacat mayor).
+                    </p>
+                  </section>
+                </div>
+              </div>
+            </div>
 
-            <h2 className="text-2xl font-semibold mt-8 mb-4 text-gray-800">
-              6. Pembatalan dan Pengembalian Dana
-            </h2>
-            <p>
-              Karena sifat kustom dari produk kami, pesanan yang sudah masuk ke
-              tahap produksi tidak dapat dibatalkan. Pengembalian hanya diterima
-              jika ada cacat produksi atau kesalahan dari pihak kami. Keluhan
-              harus diajukan dalam waktu 7 hari setelah menerima produk.
-            </p>
-
-            <h2 className="text-2xl font-semibold mt-8 mb-4 text-gray-800">
-              7. Batasan Tanggung Jawab
-            </h2>
-            <p>
-              Dalam keadaan apa pun, Nilam Bordir tidak akan bertanggung jawab
-              atas kerusakan tidak langsung, insidental, atau konsekuensial yang
-              timbul dari penggunaan atau ketidakmampuan untuk menggunakan
-              Layanan kami.
-            </p>
-
-            <h2 className="text-2xl font-semibold mt-8 mb-4 text-gray-800">
-              8. Perubahan Ketentuan
-            </h2>
-            <p>
-              Kami berhak untuk memperbarui atau mengubah Syarat & Ketentuan ini
-              kapan saja tanpa pemberitahuan sebelumnya. Versi terbaru akan
-              selalu tersedia di situs web kami.
-            </p>
-
-            <h2 className="text-2xl font-semibold mt-8 mb-4 text-gray-800">
-              9. Kontak Kami
-            </h2>
-            <p>
-              Jika Anda memiliki pertanyaan tentang Syarat & Ketentuan ini,
-              silakan hubungi kami melalui informasi kontak yang tersedia di
-              situs web kami.
-            </p>
+            <div className="bg-muted p-6 text-center text-sm text-muted-foreground border-t border-border/50">
+              <p>
+                Jika ada pertanyaan lebih lanjut, silakan hubungi tim support
+                kami.
+              </p>
+            </div>
           </div>
-        </div>
+        </FadeIn>
       </div>
     </div>
   );
