@@ -101,15 +101,17 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`sticky top-0 z-50 transition-shadow duration-300 ${
-        scrolled ? 'shadow-md' : ''
-      } border-b bg-white/80 backdrop-blur-lg`}
+      className={`sticky top-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? 'bg-background/80 backdrop-blur-xl border-b border-border/50 shadow-sm supports-[backdrop-filter]:bg-background/60'
+          : 'bg-transparent border-transparent'
+      }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <Link
             href="/"
-            className="text-2xl font-bold text-gray-900 hover:text-gray-700 transition-colors"
+            className="font-heading text-2xl font-bold text-foreground hover:text-primary transition-colors tracking-tight"
           >
             Nilam Bordir
           </Link>
@@ -118,7 +120,7 @@ export default function Navbar() {
             <div className="relative" ref={shopMenuRef}>
               <button
                 onClick={() => setIsShopOpen(!isShopOpen)}
-                className="flex items-center space-x-1 text-gray-600 hover:text-gray-900 font-medium transition-colors"
+                className="flex items-center space-x-1 text-muted-foreground hover:text-foreground font-medium transition-colors"
               >
                 <span>Shop</span>
                 <ChevronDown
