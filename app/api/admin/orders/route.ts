@@ -1,6 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { createNotification } from "@/lib/actions/notification";
+import { ORDER_STATUS_LABELS } from "@/lib/constans";
 
 export async function PUT(request:Request) {
   try{
@@ -48,6 +49,14 @@ export async function PUT(request:Request) {
     if (updateError) {
       return NextResponse.json({ error: updateError.message }, { status: 400 });
     }
+
+    await createNotification({
+      userId: order.user_id,
+      title: 'Update Status Pesanan',
+      message: `Status pesanan #${order.order_number} telah diperbarui menjadi: ${ORDER_STATUS_LABELS[status] || status}`,
+      type: 'order',
+      relatedId: order.order_number
+    });
 
     return NextResponse.json({ success: true, data: order });
   }catch (error){

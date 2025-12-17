@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
+import { createNotification } from "@/lib/actions/notification";
 import crypto from 'crypto';
 
 export async function POST(request: NextRequest) {
@@ -69,6 +70,24 @@ export async function POST(request: NextRequest) {
           updated_at: new Date().toISOString(),
         })
         .eq('id', payment.order_id);
+
+        if (paymentStatus === 'success') {
+             const { data: order } = await supabase
+                .from('orders')
+                .select('user_id, order_number')
+                .eq('id', payment.order_id)
+                .single();
+            
+             if(order) {
+                 await createNotification({
+                    userId: order.user_id,
+                    title: 'Pembayaran Berhasil',
+                    message: `Pembayaran untuk pesanan #${order.order_number} telah diterima. Pesanan akan segera diproses.`,
+                    type: 'payment',
+                    relatedId: order.order_number
+                });
+             }
+        }
     }
 
     return NextResponse.json({ success: true });
