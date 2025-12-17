@@ -194,16 +194,6 @@ export default function RegisterForm() {
         </svg>
         Google
       </Button>
-
-      <p className="text-center text-sm text-gray-600">
-        Sudah punya akun?{' '}
-        <Link
-          href="/login"
-          className="font-semibold text-gray-900 hover:underline"
-        >
-          Login di sini
-        </Link>
-      </p>
     </div>
   );
 }

@@ -5,7 +5,6 @@ import { loginAction, signInWithGoogleAction } from '@/lib/actions/auth';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import Link from 'next/link';
 import { toast } from 'sonner';
 import PasswordField from './password-field';
 
@@ -105,16 +104,6 @@ export default function LoginForm() {
         </svg>
         Google
       </Button>
-
-      <p className="text-center text-sm text-gray-600">
-        Belum punya akun?{' '}
-        <Link
-          href="/register"
-          className="font-semibold text-gray-900 hover:underline"
-        >
-          Daftar sekarang
-        </Link>
-      </p>
     </div>
   );
 }

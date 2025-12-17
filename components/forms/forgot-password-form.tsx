@@ -31,18 +31,27 @@ export default function ForgotPasswordForm() {
 
   if (success) {
     return (
-      <div className="w-full text-center space-y-4">
-        <div className="flex justify-center">
-          <CheckCircle className="w-16 h-16 text-green-500" />
+      <div className="w-full text-center space-y-6 animate-in fade-in zoom-in duration-300">
+        <div className="flex justify-center mb-6">
+          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center ring-8 ring-green-50">
+            <CheckCircle className="w-10 h-10 text-green-600" />
+          </div>
         </div>
-        <h3 className="text-xl font-semibold">Email Terkirim!</h3>
-        <p className="text-gray-600">
-          Kami telah mengirim link reset password ke email anda. Silahkan cek
-          inbox atau folder spam.
-        </p>
-        <Link href="/login">
-          <Button variant="outline" className="w-full">
-            Kembali ke login
+        <div className="space-y-2">
+          <h3 className="font-heading text-2xl font-bold text-foreground">
+            Email Terkirim!
+          </h3>
+          <p className="text-muted-foreground">
+            Kami telah mengirim link reset password ke email anda. Silahkan cek
+            inbox atau folder spam.
+          </p>
+        </div>
+        <Link href="/login" className="block pt-4">
+          <Button
+            variant="outline"
+            className="w-full h-12 rounded-xl border-primary/20 hover:bg-primary/5 hover:text-primary transition-colors"
+          >
+            Kembali ke Login
           </Button>
         </Link>
       </div>
@@ -50,44 +59,50 @@ export default function ForgotPasswordForm() {
   }
 
   return (
-    <div className="w-full space-y-6">
-      <div className="space-y-2 text-center">
-        <h2 className="text-2-xl font-bold">Lupa Password?</h2>
-        <p className="text-gray-600">
-          Masukkan email Anda dan kami akan mengirimkan link untuk reset
-          password.
+    <div className="w-full space-y-8">
+      <div className="space-y-2 text-center lg:text-left">
+        <h2 className="font-heading text-3xl font-bold text-foreground">
+          Reset Password
+        </h2>
+        <p className="text-muted-foreground">
+          Masukkan email yang terdaftar untuk menerima link reset.
         </p>
       </div>
 
-      <form action={handleSubmit} className="space-y-4">
+      <form action={handleSubmit} className="space-y-5">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
             name="email"
             type="email"
-            placeholder="youremail@email.com"
+            placeholder="nama@email.com"
+            className="h-11 rounded-lg"
             required
             disabled={isPending}
           />
         </div>
 
         {error && (
-          <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3">
+          <div className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg p-3">
             {error}
           </div>
         )}
 
-        <Button type="submit" className="w-full" disabled={isPending}>
-          {isPending ? 'Mengirim...' : 'Kirim link reset'}
+        <Button
+          type="submit"
+          className="w-full h-11 rounded-lg shadow-lg hover:shadow-primary/25 transition-all"
+          disabled={isPending}
+        >
+          {isPending ? 'Mengirim...' : 'Kirim Link Reset'}
         </Button>
       </form>
 
-      <p className="text-center text-sm text-gray-600">
+      <p className="text-center text-sm text-muted-foreground pt-2">
         Ingat password Anda?{' '}
         <Link
           href="/login"
-          className="font-semibold text-gray-900 hover:underline"
+          className="font-semibold text-primary hover:underline underline-offset-4"
         >
           Login di sini
         </Link>
